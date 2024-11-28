@@ -1,0 +1,35 @@
+<!--
+Authors: Brayden Coghill, Ashton Irwin
+Date: 2024/11/22
+
+Day planner with fitness tracker incorporated into it. User can create an account, login,
+and create events on a calendar. User can also track their fitness goals and progress.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="LoginStyle.css">
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<!--Page Title-->
+<h1 id="pageTitle">Welcome to Primate Planner!</h1>
+
+<!--Login form with option to create account-->
+<form method="post" action="verification.php" id="loginForm">
+    <h3>Login</h3>
+    <label for="username">Username:</label><br>
+    <input type="email" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <input type="submit" value="Sign In">
+    <br>
+    <a href="CreateAccount.html" id="registerLink">Create Account</a>
+</form>
+
+</body>
+</html>
