@@ -1,41 +1,38 @@
 <?php
-// connect to DB
-$username = "root";
-$password = "letmein";
-$hostname = "localhost";
-$dbname = "Primate_Planner";
-
-// connection to the database
+$username = 'root';
+$password = 'letmein';
+$hostname = 'localhost';
+$dbname = 'Primate_Planner';
 $dbhandle = new mysqli($hostname, $username, $password, $dbname);
-
-// check connection
 if ($dbhandle->connect_error) {
-    die("Connection failed: " . $dbhandle->connect_error);
+die('Connection failed: ' . $dbhandle->connect_error);
 }
 
-// verify the user
-$myusername = $_POST['myusername'];
-$mypassword = $_POST['mypassword'];
+// Get user input
 
-// prepare and bind
-$stmt = $dbhandle->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
-$stmt->bind_param("ss", $myusername, $mypassword);
+// Get user input
+$user_input = $_GET['user_input'] ?? '';
 
-// execute the query
+// Sanitize user input
+$sanitized_input = htmlspecialchars($user_input, ENT_QUOTES, 'UTF-8');
+
+// Query the database with user input
+$query = "SELECT * FROM table_name WHERE column_name LIKE ?";
+$stmt = $dbhandle->prepare($query);
+$search_term = '%' . $sanitized_input . '%';
+$stmt->bind_param('s', $search_term);
+
+// Execute the statement
 $stmt->execute();
-$result = $stmt->get_result();
 
-// check if the user exists
-if ($result->num_rows > 0) {
-    // valid user, redirect to calendar.html
-    header("Location: calendar.html");
-    exit();
-} else {
-    // invalid user, prompt to create an account
-    echo "Invalid username or password. <a href='CreateAccount.html'>Create an account</a>";
+// Fetch results
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+echo 'Result: ' . htmlspecialchars($row['result_column'], ENT_QUOTES, 'UTF-8') . '<br>';
 }
 
-// close the statement and connection
+// Close statement and connection
 $stmt->close();
 $dbhandle->close();
+
 ?>
