@@ -1,25 +1,38 @@
 function calculateCaloriesBurned(weight, duration, activityType) {
-  const workOutValues = {
-      cardio: 8.0,
-      weightLifting: 5.0
-  };
-  // Calculate the calories burned using
-  // Calories Burned (min/lbs)=MET×0.0175×Weight (lbs)×Time (minutes)
-  const effortValue = workOutValues[activityType];
-  return (effortValue * 0.0175 * weight * duration);
-}
+    const workOutValues = {
+        cardio: 7.0,
+        weightlifting: 4.0,
+        hybrid: 5.5
+    };
 
+    const effortValue = workOutValues[activityType.toLowerCase()] || 0;
+
+    const weightInKg = weight * 0.453592;
+
+    return (effortValue * 0.0175 * weightInKg * duration).toFixed(2);
+}
 //Function to update daily exercise
 
-function updateDailyExercise(event){
-    const weight = parseFloat(document.getElementById('weight').value);
-    const activityType = parseFloat(document.getElementById('duration').value).toLowerCase();
-    const duration = parseFloat(document.getElementById('activityType').value);
+function updateDailyExercise(event) {
+    const weight = parseFloat($('#dailyWeight').val());
+    const activityType = $('#exerciseChoice').val();
+    const duration = parseFloat($('#duration').val());
+
+    // Validate inputs
+    if (!weight || weight <= 0) {
+        alert("Please enter a valid weight to calculate calories burned.");
+        return;
+    }
+
+    if (!duration || duration <= 0) {
+        alert("Please enter a valid duration for your exercise.");
+        return;
+    }
 
     const caloriesBurned = calculateCaloriesBurned(weight, duration, activityType);
-    document.getElementById('calories').value = caloriesBurned.toFixed(2);
+    $('#calories').text(caloriesBurned);
 
-    alert(You burned ${caloriesBurned.toFixed(2)} calories during this exercise);
+    alert(`You burned ${caloriesBurned} calories during this exercise.`);
 }
 
 //this will take an array of weights and return the average weight forr the week
@@ -37,5 +50,35 @@ function trackGoals(currentCalories, weeklyCalories, currentWeight, goalWeight){
         weightProgress
     };
 }
-document.getElementById('dailySpread').addEventListener('submit', updateDailyExercise);
 
+$(document).ready(function(){
+    //toggle between goals and exercise
+    $('#goals').hide();
+    $('#exercises').hide();
+
+    // Toggle between goals and exercises
+    $('#showGoals').on('click', function () {
+        $('#goals').show();
+        $('#exercises').hide();
+    });
+
+    $('#showExercises').on('click', function () {
+        $('#exercises').show();
+        $('#goals').hide();
+    });
+
+    // Real-time updates for calories burned
+    $('#duration, #exerciseChoice, #dailyWeight').on('input change', function () {
+        const weight = parseFloat($('#dailyWeight').val()) || 0; // Use dailyWeight for real-time calculation
+        const duration = parseFloat($('#duration').val()) || 0;
+        const activityType = $('#exerciseChoice').val();
+
+        if (weight > 0 && duration > 0) {
+            const calories = calculateCaloriesBurned(weight, duration, activityType);
+            $('#caloriesBurned').text(calories);
+        } else {
+            $('#caloriesBurned').text('0');
+        }
+    });
+    $('#dailySpread').on('submit', updateDailyExercise);
+});
