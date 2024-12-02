@@ -10,6 +10,12 @@ body {
     margin: 30px 0;
 }
 
+#wrongInfo {
+    color: #763626;
+    font-size: 2em;
+    margin: 30px 0;
+}
+
 #loginForm {
     background-color: #90AFC5;
     border: 2px solid #90AFC5;
