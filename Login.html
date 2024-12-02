@@ -14,22 +14,23 @@ and create events on a calendar. User can also track their fitness goals and pro
     <title>Login</title>
 </head>
 <body>
-<!--Page Title-->
-<h1 id="pageTitle">Welcome to Primate Planner!</h1>
+<main>
+    <!-- Page Title -->
+    <h1 id="pageTitle">Welcome to Primate Planner!</h1>
 
-<!--Login form with option to create account-->
-<form method="post" action="Verification.php" id="loginForm">
-    <h3>Login</h3>
-    <label for="username">Username:</label><br>
-    <input type="email" id="username" name="username" required>
-    <br>
-    <label for="password">Password:</label><br>
-    <input type="password" id="password" name="password" required>
-    <br>
-    <input type="submit" value="Sign In">
-    <br>
-    <a href="CreateAccount.html" id="registerLink">Create Account</a>
-</form>
-
+    <!-- Login form with option to create account -->
+    <form method="post" action="Verification.php" id="loginForm">
+        <h3>Login</h3>
+        <label for="username">Username:</label><br>
+        <input type="email" id="username" name="username" placeholder="Enter your email" required>
+        <br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <br>
+        <button type="submit" name="submit">Sign In</button>
+        <br>
+        <a href="CreateAccount.html" id="registerLink">Create Account</a>
+    </form>
+</main>
 </body>
 </html>

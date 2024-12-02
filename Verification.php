@@ -1,38 +1,44 @@
 <?php
+session_start();
+
+// Database connection
 $username = 'root';
 $password = 'letmein';
 $hostname = 'localhost';
 $dbname = 'Primate_Planner';
 $dbhandle = new mysqli($hostname, $username, $password, $dbname);
 if ($dbhandle->connect_error) {
-die('Connection failed: ' . $dbhandle->connect_error);
+    die('Connection failed: ' . $dbhandle->connect_error);
 }
 
-// Get user input
-
-// Get user input
-$user_input = $_GET['user_input'] ?? '';
+// Assume these are user input values from a form
+$user_input = $_POST['username'] ?? '';
+$user_password = $_POST['password'] ?? '';
 
 // Sanitize user input
-$sanitized_input = htmlspecialchars($user_input, ENT_QUOTES, 'UTF-8');
+$sanitized_username = htmlspecialchars($user_input, ENT_QUOTES, 'UTF-8');
 
-// Query the database with user input
-$query = "SELECT * FROM table_name WHERE column_name LIKE ?";
+// Query to check for valid user
+$query = "SELECT * FROM users WHERE username = ? AND password = ?";
 $stmt = $dbhandle->prepare($query);
-$search_term = '%' . $sanitized_input . '%';
-$stmt->bind_param('s', $search_term);
+$stmt->bind_param('ss', $sanitized_username, $user_password); // Passwords should be hashed in production
 
 // Execute the statement
 $stmt->execute();
-
-// Fetch results
 $result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) {
-echo 'Result: ' . htmlspecialchars($row['result_column'], ENT_QUOTES, 'UTF-8') . '<br>';
+
+if ($result->num_rows > 0) {
+    // Successfully logged in
+    $_SESSION['username'] = $sanitized_username; // Store username in session
+
+    // Redirect to calendar
+    header('Location: calendar.php');
+    exit();
+} else {
+    echo 'Invalid login credentials!';
 }
 
 // Close statement and connection
 $stmt->close();
 $dbhandle->close();
-
 ?>
