@@ -1,4 +1,56 @@
 <?php
+$conn = new mysqli('localhost','cs213user','letmein','fitnesstracker');
+if($conn->connect_error){
+    die("Connection failed: " . $conn->connect_error);
+    
+}
+
+session_start();
+
+// Check if a form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['weight'], $_POST['caloriesGoal'], $_POST['exercise'])) {
+        // Handle Goals Form Submission
+        $weight_goal = (float) $_POST['weight'];
+        $weekly_calories = (int) $_POST['caloriesGoal'];
+        $weekly_duration = (int) $_POST['exercise'];
+
+        // Insert or update fitness goals
+        //use of ? ? ? ? help with sql inj
+        $stmt = $conn->prepare("INSERT INTO fitness_goals (mid, weight_goal, weekly_weekly_calories, weekly_duration)
+                                VALUES (?, ?, ?, ?)
+                                ON DUPLICATE KEY UPDATE
+                                weight_goal = VALUES(weight_goal),
+                                weekly_weekly_calories = VALUES(weekly_weekly_calories),
+                                weekly_duration = VALUES(weekly_duration)");
+        $stmt->bind_param("iiii", $mid, $weight_goal, $weekly_calories, $weekly_duration);
+
+        $stmt->close();
+    } elseif (isset($_POST['date'], $_POST['dailyWeight'], $_POST['exercise'], $_POST['duration'])) {
+        // Copy over from js file for calories burned
+        $exercise_date = $_POST['date'];
+        $daily_weight = (int) $_POST['dailyWeight'];
+        $exercise_type = $_POST['exercise'];
+        $duration_minutes = (int) $_POST['duration'];
+
+        $workOutValues = [
+            'cardio' => 7.0,
+            'weightLifting' => 4.0,
+            'hybrid' => 5.5
+        ];
+        $effortValue = $workOutValues[strtolower($exercise_type)] ?? 0;
+        $weightInKg = $daily_weight * 0.453592;
+        $calories_burned = $effortValue * 0.0175 * $weightInKg * $duration_minutes;
+
+        // Insert the exercise entry into the database
+        $stmt = $conn->prepare("INSERT INTO daily_exercises (member_id, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
+                                VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssid", $mid, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
+
+        $stmt->close();
+    }
+}
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
