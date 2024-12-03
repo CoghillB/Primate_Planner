@@ -26,8 +26,10 @@ $email_check_stmt->execute();
 $email_check_result = $email_check_stmt->get_result();
 
 if ($email_check_result->num_rows > 0) {
-    // email already in use
-    echo "Email is already in use. Please use another email. <a href='CreateAccount.html'>Go back</a>";
+    //pop up stating email is in use and to use a different one. Pop up should be on same screen
+    echo "<script>alert('Email is already in use. Please use a different email.');</script>";
+    $email_check_stmt->close();
+    $dbhandle->close();
 } else {
     // prepare and bind
     $stmt = $dbhandle->prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)");

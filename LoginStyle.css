@@ -11,9 +11,8 @@ body {
 }
 
 #wrongInfo {
-    color: #763626;
-    font-size: 2em;
-    margin: 30px 0;
+    color: red;
+    font-weight: bold;
 }
 
 #loginForm {
@@ -48,4 +47,16 @@ input {
     border-radius: 5px;
     border: 1px solid #2A3132;
     width: 75%;
+}
+
+button {
+    margin-top: 15px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #2A3132;
+    box-shadow: #2A3132 0 0 10px;
+    width: 75%;
+    background-color: #763626;
+    color: #2A3132;
+    font-weight: bold;
 }
