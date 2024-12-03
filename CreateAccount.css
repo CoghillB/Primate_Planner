@@ -4,11 +4,23 @@ body {
     font-family: Arial, sans-serif;
 }
 
-#info {
+#pageTitle {
+    color: #763626;
+    font-size: 2em;
+    margin: 30px 0;
+}
+
+#wrongInfo {
+    color: #763626;
+    font-size: 2em;
+    margin: 30px 0;
+}
+
+#createAccountForm {
     background-color: #90AFC5;
     border: 2px solid #90AFC5;
     border-radius: 10px;
-    -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 0 0 10px 0 rgba(0,0,0,0.75);
 
     text-align: center;
     margin: 0 auto;
@@ -17,14 +29,59 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+
+    @media (min-width: 768px) {
+        width: 30%;
+    }
+
+    @media (max-width: 767px) {
+        width: 45%;
+    }
 }
 
-@media (min-width: 768px) {
-    width: 30%;
+#registerLink {
+    color: #763626;
 }
 
-@media (max-width: 767px) {
-    width: 45%;
+input {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #2A3132;
+    width: 75%;
 }
+
+
+
+
+
+
+/*body {*/
+/*    background-color: #2A3132;*/
+/*    text-align: center;*/
+/*    font-family: Arial, sans-serif;*/
+/*}*/
+
+/*#info {*/
+/*    background-color: #90AFC5;*/
+/*    border: 2px solid #90AFC5;*/
+/*    border-radius: 10px;*/
+/*    -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);*/
+
+/*    text-align: center;*/
+/*    margin: 0 auto;*/
+/*    padding: 18px;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*}*/
+
+/*@media (min-width: 768px) {*/
+/*    width: 30%;*/
+/*}*/
+
+/*@media (max-width: 767px) {*/
+/*    width: 45%;*/
+/*}*/
 
 
