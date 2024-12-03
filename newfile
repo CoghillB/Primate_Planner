@@ -1,0 +1,22 @@
+
+CREATE TABLE daily_exercises (
+    exercise_id INT AUTO_INCREMENT PRIMARY KEY,
+    mid INT,
+    exercise_date DATE,
+    weight INT,
+    exercise_type VARCHAR(50),
+    duration_minutes INT,
+    calories_burned INT,
+    FOREIGN KEY (mid) REFERENCES Members(mid) ON DELETE CASCADE
+);
+
+
+INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
+VALUES 
+(1, '2024-12-02', 180, 'Cardio', 45, 350),
+(1, '2024-12-03', 179, 'Weightlifting', 60, 400),
+(1, '2024-12-04', 179, 'Cardio', 30, 250),
+(1, '2024-12-05', 178, 'Hybrid', 50, 375),
+(1, '2024-12-06', 178, 'Cardio', 40, 320),
+(1, '2024-12-07', 177, 'Weightlifting', 70, 450),
+(1, '2024-12-08', 177, 'Hybrid', 55, 400);

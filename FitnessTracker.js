@@ -11,6 +11,7 @@ function calculateCaloriesBurned(weight, duration, activityType) {
 
     return (effortValue * 0.0175 * weightInKg * duration).toFixed(2);
 }
+    
 //Function to update daily exercise
 
 function updateDailyExercise(event) {
@@ -20,19 +21,19 @@ function updateDailyExercise(event) {
 
     // Validate inputs
     if (!weight || weight <= 0) {
-        alert("Please enter a valid weight to calculate calories burned.");
+       // alert("Please enter a valid weight to calculate calories burned.");
         return;
     }
 
     if (!duration || duration <= 0) {
-        alert("Please enter a valid duration for your exercise.");
+       // alert("Please enter a valid duration for your exercise.");
         return;
     }
 
     const caloriesBurned = calculateCaloriesBurned(weight, duration, activityType);
     $('#calories').text(caloriesBurned);
 
-    alert(`You burned ${caloriesBurned} calories during this exercise.`);
+   // alert(`You burned ${caloriesBurned} calories during this exercise.`);
 }
 
 //this will take an array of weights and return the average weight forr the week

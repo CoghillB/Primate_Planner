@@ -1,33 +1,43 @@
 <?php
-$conn = new mysqli('localhost','cs213user','letmein','fitnesstracker');
-if($conn->connect_error){
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$conn = new mysqli('localhost', 'cs213user', 'letmein', 'fitnesstracker');
+if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-    
 }
 
 session_start();
+$_SESSION['member_id'] = 1;
+// Does member ID exist
+$mid = $_SESSION['member_id'] ?? null; 
+if (!$mid) {
+    die("You must be logged in to set fitness goals.");
+}
 
 // Check if a form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['weight'], $_POST['caloriesGoal'], $_POST['exercise'])) {
         // Handle Goals Form Submission
-        $weight_goal = (float) $_POST['weight'];
+        $weight_goal = (int) $_POST['weight'];
         $weekly_calories = (int) $_POST['caloriesGoal'];
         $weekly_duration = (int) $_POST['exercise'];
 
         // Insert or update fitness goals
-        //use of ? ? ? ? help with sql inj
-        $stmt = $conn->prepare("INSERT INTO fitness_goals (mid, weight_goal, weekly_weekly_calories, weekly_duration)
-                                VALUES (?, ?, ?, ?)
+        $stmt = $conn->prepare("INSERT INTO Goals (mid, weight_goal, weekly_calories, weekly_duration, created_at)
+                                VALUES (?, ?, ?, ?, NOW())
                                 ON DUPLICATE KEY UPDATE
                                 weight_goal = VALUES(weight_goal),
-                                weekly_weekly_calories = VALUES(weekly_weekly_calories),
+                                weekly_calories = VALUES(weekly_calories),
                                 weekly_duration = VALUES(weekly_duration)");
         $stmt->bind_param("iiii", $mid, $weight_goal, $weekly_calories, $weekly_duration);
 
+        if (!$stmt->execute()) {
+            echo "Error: " . $stmt->error;
+        }
         $stmt->close();
     } elseif (isset($_POST['date'], $_POST['dailyWeight'], $_POST['exercise'], $_POST['duration'])) {
-        // Copy over from js file for calories burned
+        // Handle Exercise Form Submission
         $exercise_date = $_POST['date'];
         $daily_weight = (int) $_POST['dailyWeight'];
         $exercise_type = $_POST['exercise'];
@@ -42,12 +52,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $weightInKg = $daily_weight * 0.453592;
         $calories_burned = $effortValue * 0.0175 * $weightInKg * $duration_minutes;
 
-        // Insert the exercise entry into the database
-        $stmt = $conn->prepare("INSERT INTO daily_exercises (member_id, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
-                                VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("isssid", $mid, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
-
+        // Update the member's weight in the Members table
+        $stmt = $conn->prepare("UPDATE Members SET weight = ? WHERE mid = ?");
+        $stmt->bind_param("ii", $daily_weight, $mid);
+        if (!$stmt->execute()) {
+            echo "Error updating weight: " . $stmt->error;
+        }
         $stmt->close();
+
+        // Update the Goals table by subtracting the duration and calories burned
+        $stmt = $conn->prepare("UPDATE Goals 
+                                SET weekly_calories = GREATEST(weekly_calories - ?, 0),
+                                    weekly_duration = GREATEST(weekly_duration - ?, 0)
+                                WHERE mid = ?");
+        $stmt->bind_param("iii", $calories_burned, $duration_minutes, $mid);
+        if (!$stmt->execute()) {
+            echo "Error logging exercise: " . $stmt->error;
+        }
+        $stmt->close();
+
+        // Insert or update daily exercise into `daily_exercises` table
+        $stmt = $conn->prepare("INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
+                                VALUES (?, ?, ?, ?, ?, ?)
+                                ON DUPLICATE KEY UPDATE
+                                weight = VALUES(weight),
+                                exercise_type = VALUES(exercise_type),
+                                duration_minutes = VALUES(duration_minutes),
+                                calories_burned = VALUES(calories_burned)");
+        $stmt->bind_param("isssid", $mid, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
+        if (!$stmt->execute()) {
+            echo "Error logging exercise: " . $stmt->error;
+        }
+        $stmt->close();
+
+        // Redirect to the WeeklyProgress.php page to show the chart
+        header("Location: WeeklyProgress.php");
+        exit();
     }
 }
 $conn->close();
@@ -115,10 +155,10 @@ $conn->close();
         <br>
         <input type="submit" value="Submit">
         <br>
-        <a href="FitnessHistory.php" id="historyLink">View History</a>
+        <!--Bring to chart-->
+        <a href="WeeklyProgress.php" id="historyLink" class="btn btn-secondary mt-3">Current Weekly Progress</a>
+    </form>
 </div>
-
-    <!-- Display weight on a 7 day average to check losses-->
 
 <script src="FitnessTracker.js"></script>
 </body>
