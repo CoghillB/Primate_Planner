@@ -95,16 +95,25 @@ $conn->close();
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <meta charset="UTF-8">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="FitnessTracker.css">
     <title>Fitness Tracker</title>
 </head>
 <body>
-<!--Page Title-->
-<h1 id="pageTitle">Fitness Tracker</h1>
-
-<!--Nav Buttons-->
+<!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <span class="navbar-brand mx-auto text-center flex-grow-1">Fitness Tracker</span>
+            <form action="UserLogin.php" method="POST">
+            <button type="submit" class="btn btn-outline-light">Log Out</button>
+        </form>
+        </div>
+    </nav>
+<div class="content">
+    <!--Nav Buttons-->
 <div class="container" id="navButtons">
     <button id="showGoals">Goals</button>
     <button id="showExercises">Exercises</button>
@@ -127,37 +136,38 @@ $conn->close();
         <input type="submit" value="Submit">
     </form>
 </div>
-<!--container for exercise form-->
-<div class="container" id="exercises" style="display: none;">
-    <form method="post" action="FitnessTracker.php" id="dailySpread">
-        <h3>Enter your daily exercise information</h3>
-        <label for="date">Date:</label><br>
-        <input type="date" id="date" name="date" required>
-        <br>
-        <label for="dailyWeight">Current Weight (lbs):</label>
-        <br>
-        <input type="number" id="dailyWeight" name="dailyWeight" required>
-        <br>
-        <!--To choose either cardio or weight lifting-->
-        <label for="exercise">Exercise:</label><br>
-        <select id="exerciseChoice" name="exercise" required>
-            <option value="cardio">Cardio</option>
-            <option value="weightLifting">Weightlifting</option>
-            <option value="hybrid">Hybrid</option>
-        </select>
-        <br>
-        <label for="duration">Duration (minutes):</label><br>
-        <input type="number" id="duration" name="duration" required>
-        <br>
-        <!--Blanket formula to calculate net loss calories-->
-        <label for="calories">Calories Burned:</label><br>
-        <output id="caloriesBurned">0</output>
-        <br>
-        <input type="submit" value="Submit">
-        <br>
-        <!--Bring to chart-->
-        <a href="WeeklyProgress.php" id="historyLink" class="btn btn-secondary mt-3">Current Weekly Progress</a>
-    </form>
+    <!--container for exercise form-->
+    <div class="container" id="exercises" style="display: none;">
+        <form method="post" action="FitnessTracker.php" id="dailySpread">
+            <h3>Enter your daily exercise information</h3>
+            <label for="date">Date:</label><br>
+            <input type="date" id="date" name="date" required>
+            <br>
+            <label for="dailyWeight">Current Weight (lbs):</label>
+            <br>
+            <input type="number" id="dailyWeight" name="dailyWeight" required>
+            <br>
+            <!--To choose either cardio or weight lifting-->
+            <label for="exercise">Exercise:</label><br>
+            <select id="exerciseChoice" name="exercise" required>
+                <option value="cardio">Cardio</option>
+                <option value="weightLifting">Weightlifting</option>
+                <option value="hybrid">Hybrid</option>
+            </select>
+            <br>
+            <label for="duration">Duration (minutes):</label><br>
+            <input type="number" id="duration" name="duration" required>
+            <br>
+            <!--Blanket formula to calculate net loss calories-->
+            <label for="calories">Calories Burned:</label><br>
+            <output id="caloriesBurned">0</output>
+            <br>
+            <input type="submit" value="Submit">
+            <br>
+            <!--Bring to chart-->
+            <a href="WeeklyProgress.php" id="historyLink" class="btn btn-secondary mt-3">Current Weekly Progress</a>
+        </form>
+    </div>    
 </div>
 
 <script src="FitnessTracker.js"></script>

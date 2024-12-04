@@ -1,0 +1,77 @@
+.navbar {
+    background-color: #763626 !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    height: 56px;
+}
+
+.content {
+    margin-top: 12px;
+}
+#navButtons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px auto;
+    max-width: 500px;
+}
+#navButtons button {
+    border-radius: 15px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #90AFC5;
+    color: #2A3132;
+    cursor: pointer;
+    font-weight: bold;
+}
+#navButtons button:hover {
+    background-color: #763626;
+    color: #FFFFFF;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar .btn {
+    padding: 5px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar .btn:hover {
+    background-color: #FFFFFF;
+    color: #763626;
+}
+body {
+    background-color: #2A3132 !important;
+    margin: 0;
+    color: #FFFFFF;
+    padding-top: 56px;
+    overflow-x: hidden;
+}
+#goals, #exercises {
+    background-color: #90AFC5 !important;
+    border: 2px solid #FFFFFF !important;
+    border-radius: 15px !important;
+    padding: 20px !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+    max-width: 500px !important;
+    margin: 20px auto !important;
+}
+
+button, input[type="submit"], #historyLink {
+    background-color: #763626;
+    color: #FFFFFF;
+    border: 2px solid #2A3132;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+button:hover, input[type="submit"]:hover, #historyLink:hover {
+    background-color: #90AFC5;
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}

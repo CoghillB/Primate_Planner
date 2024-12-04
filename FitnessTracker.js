@@ -19,17 +19,6 @@ function updateDailyExercise(event) {
     const activityType = $('#exerciseChoice').val();
     const duration = parseFloat($('#duration').val());
 
-    // Validate inputs
-    if (!weight || weight <= 0) {
-       // alert("Please enter a valid weight to calculate calories burned.");
-        return;
-    }
-
-    if (!duration || duration <= 0) {
-       // alert("Please enter a valid duration for your exercise.");
-        return;
-    }
-
     const caloriesBurned = calculateCaloriesBurned(weight, duration, activityType);
     $('#calories').text(caloriesBurned);
 
@@ -70,7 +59,7 @@ $(document).ready(function(){
 
     // Real-time updates for calories burned
     $('#duration, #exerciseChoice, #dailyWeight').on('input change', function () {
-        const weight = parseFloat($('#dailyWeight').val()) || 0; // Use dailyWeight for real-time calculation
+        const weight = parseFloat($('#dailyWeight').val()) || 0; 
         const duration = parseFloat($('#duration').val()) || 0;
         const activityType = $('#exerciseChoice').val();
 
