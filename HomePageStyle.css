@@ -5,11 +5,16 @@
     font-family: "Quicksand", sans-serif, Arial, Helvetica;
 }
 
+main {
+    width: 100%;
+}
+
 html {
     font-size: 62.5%;
 }
 
 .container {
+
     width: 100%;
     height: 100vh;
     background-color: #90AFC5;
@@ -113,3 +118,37 @@ html {
     border: .2rem solid #763626;
 }
 
+.logo {
+    font-size: 2.5rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #763626;
+}
+
+.nav-item {
+    color: #763626;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.1rem;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0 .3rem .5rem rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#footer {
+    background-color: #2A3132;
+    color: #763626;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
+#footer a {
+    padding: 0 10px 5px 10px;
+}
