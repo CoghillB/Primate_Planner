@@ -1,14 +1,15 @@
 <!--
-Authors: Brayden Coghill, Ashton Irwin
-Date: 2024/11/22
+Created by Brayden Coghill and Ashton Irwin
+Date: December 4, 2024
 
-Day planner with fitness tracker incorporated into it. User can create an account, login,
-and create events on a calendar. User can also track their fitness goals and progress.
+This page is the login page for the Primate Planner application. It allows users to enter their username and password
+to access their account. If the user does not have an account, they can click the "Create Account" link to be taken to
+the account creation page.
 -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Link to the external CSS file for styling the login page -->
     <link rel="stylesheet" type="text/css" href="LoginStyle.css">
     <meta charset="UTF-8">
     <title>Login</title>
@@ -21,14 +22,18 @@ and create events on a calendar. User can also track their fitness goals and pro
     <!-- Login form with option to create account -->
     <form method="post" action="UserLogin.php" id="loginForm">
         <h3>Login</h3>
+        <!-- Username input field -->
         <label for="username">Username:</label><br>
         <input type="email" id="username" name="username" placeholder="Enter your email" required>
         <br>
+        <!-- Password input field -->
         <label for="password">Password:</label><br>
         <input type="password" id="password" name="password" placeholder="Enter your password" required>
         <br>
+        <!-- Submit button for the login form -->
         <button type="submit" name="submit">Sign In</button>
         <br>
+        <!-- Link to the account creation page -->
         <a href="CreateAccount.html" id="registerLink" name="createAccount">Create Account</a>
     </form>
 </main>
