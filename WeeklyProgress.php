@@ -161,6 +161,8 @@ $conn->close();
                         type: 'linear',
                         position: 'right',
                         beginAtZero: false, 
+                        min:150,
+                        max:250,
                         title: {
                             display: true,
                             text: 'Weight (lbs)' 
