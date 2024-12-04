@@ -25,6 +25,16 @@ CREATE TABLE daily_exercises (
 );
 
 
+CREATE TABLE Goals (
+    mid INT,
+    weight_goal INT,
+    weekly_calories INT,
+    weekly_duration INT,
+    created_at DATETIME,
+    PRIMARY KEY (mid),
+    FOREIGN KEY (mid) REFERENCES Members(mid) ON DELETE CASCADE
+);
+
 INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
 VALUES 
 (1, '2024-12-02', 180, 'Cardio', 45, 350),
