@@ -11,7 +11,7 @@ function calculateCaloriesBurned(weight, duration, activityType) {
 
     return (effortValue * 0.0175 * weightInKg * duration).toFixed(2);
 }
-    
+
 //Function to update daily exercise
 
 function updateDailyExercise(event) {
@@ -42,6 +42,12 @@ function trackGoals(currentCalories, weeklyCalories, currentWeight, goalWeight){
 }
 
 $(document).ready(function(){
+    // Logout button redirects to Login.html
+    $('#logoutBTN').on('click', function(){
+        // Redirect to login page
+        window.location.href = 'Login.html';
+    });
+
     //toggle between goals and exercise
     $('#goals').hide();
     $('#exercises').hide();
@@ -59,7 +65,7 @@ $(document).ready(function(){
 
     // Real-time updates for calories burned
     $('#duration, #exerciseChoice, #dailyWeight').on('input change', function () {
-        const weight = parseFloat($('#dailyWeight').val()) || 0; 
+        const weight = parseFloat($('#dailyWeight').val()) || 0;
         const duration = parseFloat($('#duration').val()) || 0;
         const activityType = $('#exerciseChoice').val();
 
@@ -72,3 +78,4 @@ $(document).ready(function(){
     });
     $('#dailySpread').on('submit', updateDailyExercise);
 });
+

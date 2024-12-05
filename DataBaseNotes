@@ -5,7 +5,9 @@ CREATE TABLE Members (
     fname VARCHAR(20),
     lname VARCHAR(20),
     email VARCHAR(255) UNIQUE,
-    password VARCHAR(255)
+    password VARCHAR(255),
+    weight INT,
+    age INT
     );
 
 INSERT INTO Members (fname, lname, email, password)
@@ -24,6 +26,16 @@ CREATE TABLE daily_exercises (
     FOREIGN KEY (mid) REFERENCES Members(mid) ON DELETE CASCADE
 );
 
+INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
+VALUES
+(1, '2024-12-02', 180, 'Cardio', 45, 350),
+(1, '2024-12-03', 179, 'Weightlifting', 60, 400),
+(1, '2024-12-04', 179, 'Cardio', 30, 250),
+(1, '2024-12-05', 178, 'Hybrid', 50, 375),
+(1, '2024-12-06', 178, 'Cardio', 40, 320),
+(1, '2024-12-07', 177, 'Weightlifting', 70, 450),
+(1, '2024-12-08', 177, 'Hybrid', 55, 400);
+
 
 CREATE TABLE Goals (
     mid INT,
@@ -32,15 +44,6 @@ CREATE TABLE Goals (
     weekly_duration INT,
     created_at DATETIME,
     PRIMARY KEY (mid),
-    FOREIGN KEY (mid) REFERENCES Members(mid) ON DELETE CASCADE
+    FOREIGN KEY (mid) REFERENCES Members(id) ON DELETE CASCADE
 );
 
-INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
-VALUES 
-(1, '2024-12-02', 180, 'Cardio', 45, 350),
-(1, '2024-12-03', 179, 'Weightlifting', 60, 400),
-(1, '2024-12-04', 179, 'Cardio', 30, 250),
-(1, '2024-12-05', 178, 'Hybrid', 50, 375),
-(1, '2024-12-06', 178, 'Cardio', 40, 320),
-(1, '2024-12-07', 177, 'Weightlifting', 70, 450),
-(1, '2024-12-08', 177, 'Hybrid', 55, 400);
