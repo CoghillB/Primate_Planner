@@ -30,9 +30,10 @@ if ($stmt) {
     $stmt->bind_param('ssss', $fname, $lname, $email, $hashedPassword);
 
     if ($stmt->execute()) {
-        // Redirect to login page upon successful insertion
+//         Redirect to login page upon successful insertion
         $displayBlock = "
 <body>
+
 <main>
     <!-- Page Title -->
     <h1 id='pageTitle'>Account Created Successfully!</h1>

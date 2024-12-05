@@ -45,13 +45,35 @@ if (isset($_POST['submit'])) {
     }
 }
 
-function is_valid_user($mysqli, $email, $password) {
+function is_valid_user($mysqli, $email, $password)
+{
     $email = strtolower($email);
-    $query = 'SELECT email FROM Members WHERE LOWER(email) = ? AND password = SHA1(?)';
+    $query = 'SELECT email, password FROM Members WHERE LOWER(email) = ?';
     $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('ss', $email, $password);
-    $stmt->execute();
+
+    if (!$stmt) {
+        // Handle error, e.g., log and return false or trigger an error
+        return false;
+    }
+
+    $stmt->bind_param('s', $email);
+    if (!$stmt->execute()) {
+        // Handle error
+        $stmt->close();
+        return false;
+    }
+
     $result = $stmt->get_result();
-    return ($result->num_rows == 1);
+    if ($result->num_rows != 1) {
+        $stmt->close();
+        return false;
+    }
+
+    $user = $result->fetch_assoc();
+    $stmt->close();
+
+    // Assume password_verify is used after you have stored hashed passwords using password_hash
+    return password_verify($password, $user['password']);
 }
+
 ?>
