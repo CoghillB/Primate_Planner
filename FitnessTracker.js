@@ -76,6 +76,11 @@ $(document).ready(function(){
             $('#caloriesBurned').text('0');
         }
     });
-    $('#dailySpread').on('submit', updateDailyExercise);
+    // Validate form before submitting
+    $('#dailySpread').on('submit', function (event) {
+        if (!validateExerciseForm()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
 });
 

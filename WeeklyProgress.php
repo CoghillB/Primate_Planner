@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 //  connection
-$conn = new mysqli('localhost', 'cs213user', 'letmein', 'Primate_Planner');
+$conn = new mysqli('localhost', 'root', 'letmein', 'Primate_Planner');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -17,6 +17,10 @@ if (!$mid) {
     die("You must be logged in to view weekly progress.");
 }
 
+// Fetch the user's exercise goals
+$goalsResult = $conn->query("SELECT weight_goal, weekly_calories, weekly_duration FROM Goals WHERE mid = $mid");
+$goalsData = $goalsResult->fetch_assoc();
+
 // Fetch weekly exercise data
 $result = $conn->query("SELECT exercise_date, AVG(weight) AS avg_weight, SUM(duration_minutes) AS total_duration, SUM(calories_burned) AS total_calories
                         FROM daily_exercises
@@ -24,11 +28,20 @@ $result = $conn->query("SELECT exercise_date, AVG(weight) AS avg_weight, SUM(dur
                         GROUP BY exercise_date
                         ORDER BY exercise_date");
 
+
 // Store fetched data into an array
 $exerciseData = [];
+$totalCaloriesBurned = 0;
+$totalDuration = 0;
 while ($row = $result->fetch_assoc()) {
     $exerciseData[] = $row;
+    $totalCaloriesBurned += $row['total_calories'];
+    $totalDuration += $row['total_duration'];
 }
+// Calculate progress towards goals
+$caloriesGoalProgress = ($goalsData && $goalsData['weekly_calories']) ? min(($totalCaloriesBurned / $goalsData['weekly_calories']) * 100, 100) : 0;
+$durationGoalProgress = ($goalsData && $goalsData['weekly_duration']) ? min(($totalDuration / $goalsData['weekly_duration']) * 100, 100) : 0;
+
 $conn->close();
 ?>
 
@@ -42,9 +55,29 @@ $conn->close();
     <title>Weekly Progress Chart</title>
 </head>
 <body>
-    <!-- Container  chart -->
+    
+    <!-- Container for displaying goals progress -->
     <div class="container mt-5">
         <h1 class="text-center mb-4">Weekly Progress Chart</h1>
+        <?php if ($goalsData): ?>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Progress Towards Weekly Goals</h5>
+                    <p class="card-text">
+                        Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goalsData['weekly_calories'] ?> 
+                        (<?= number_format($caloriesGoalProgress, 2) ?>%)<br>
+                        Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes 
+                        (<?= number_format($durationGoalProgress, 2) ?>%)
+                    </p>
+                </div>
+            </div>
+        <?php else: ?>
+            <p>No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>
+        <?php endif; ?>
+    </div>
+    <!-- Container  chart -->
+    <div class="container mt-5">
+
         <div class="card shadow-sm">
             <div class="card-body">
                 <canvas id="weeklyProgressChart"></canvas>
