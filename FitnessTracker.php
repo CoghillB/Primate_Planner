@@ -16,10 +16,16 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$_SESSION['member_id'] = 1;
-// Does member ID exist
-$id = $_SESSION['member_id'] ?? null;
-if (!$id) {
+// Check if the user is logged in
+if (!isset($_SESSION['member_id'])) {
+    // Redirect to the login page if not logged in
+    header("Location: Login.html");
+    exit();
+}
+
+$mid = $_SESSION['member_id']; // Use $mid consistently
+
+if (!$mid) {
     die("You must be logged in to set fitness goals.");
 }
 
@@ -115,7 +121,7 @@ $conn->close();
 <nav class="navbar navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
         <span class="navbar-brand mx-auto text-center flex-grow-1">Fitness Tracker</span>
-        <form action="Login.html" method="POST">
+        <form action="Logout.php" method="POST">
             <button type="submit" class="btn btn-outline-light" id="logoutBTN">Log Out</button>
         </form>
     </div>

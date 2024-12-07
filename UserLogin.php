@@ -4,7 +4,7 @@ echo "<link rel='stylesheet' type='text/css' href='LoginStyle.css'>";
 
 // Define constants
 define('LOGIN_URL', 'Login.html');
-define('HOME_PAGE', 'HomePage.html');
+define('HOME_PAGE', 'HomePage.php');
 define('INCORRECT_MSG', "
 <body>
     <main>
@@ -31,8 +31,12 @@ if (isset($_POST['submit'])) {
     $password = filter_input(INPUT_POST, 'password');
 
     if ($email && $password) {
-        if (is_valid_user($mysqli, $email, $password)) {
-            setcookie('auth', session_id(), time() + 60 * 30, '/', '', 0);
+        $memberId = is_valid_user($mysqli, $email, $password);
+        if ($memberId) {
+            // Store member ID in the session
+            $_SESSION['member_id'] = $memberId;
+
+            // Redirect to the home page
             header("Location: " . HOME_PAGE);
             exit;
         } else {
@@ -40,6 +44,7 @@ if (isset($_POST['submit'])) {
             exit;
         }
     } else {
+        // Redirect to login page if input is invalid
         header("Location: " . LOGIN_URL);
         exit;
     }
@@ -48,31 +53,33 @@ if (isset($_POST['submit'])) {
 function is_valid_user($mysqli, $email, $password)
 {
     $email = strtolower($email);
-    $query = 'SELECT email, password FROM Members WHERE LOWER(email) = ?';
+    $query = 'SELECT id, password FROM Members WHERE LOWER(email) = ?';
     $stmt = $mysqli->prepare($query);
 
     if (!$stmt) {
-        // Handle error, e.g., log and return false or trigger an error
-        return false;
+        return false; // Handle statement preparation error
     }
 
     $stmt->bind_param('s', $email);
     if (!$stmt->execute()) {
-        // Handle error
         $stmt->close();
-        return false;
+        return false; // Handle execution error
     }
 
     $result = $stmt->get_result();
     if ($result->num_rows != 1) {
         $stmt->close();
-        return false;
+        return false; // User not found or duplicate email
     }
 
     $user = $result->fetch_assoc();
     $stmt->close();
 
-    // Assume password_verify is used after you have stored hashed passwords using password_hash
-    return password_verify($password, $user['password']);
+    // Verify the password
+    if (password_verify($password, $user['password'])) {
+        return $user['id']; // Return id if password is valid
+    }
+
+    return false; // Password mismatch
 }
 ?>

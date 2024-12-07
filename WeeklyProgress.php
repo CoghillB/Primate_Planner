@@ -1,63 +1,111 @@
 <?php
-// debugging
+session_start();
+//echo "Logged-in member ID: " . ($_SESSION['member_id'] ?? 'Not Logged In') . "<br>";
+
+// Enable debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-//  connection
+// Redirect to login if not logged in
+if (!isset($_SESSION['member_id'])) {
+    header("Location: Login.html");
+    exit();
+}
+
+$mid = $_SESSION['member_id'];
+
+// Database connection
 $conn = new mysqli('localhost', 'root', 'letmein', 'Primate_Planner');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Start session/ set member ID test
-
-session_start();
-$_SESSION['member_id'] = 1;
-$mid = $_SESSION['member_id'] ?? null;
-if (!$mid) {
-    die("You must be logged in to view weekly progress.");
-}
-
-// Fetch the user's exercise goals
-$goalsResult = $conn->query("SELECT weight_goal, weekly_calories, weekly_duration FROM Goals WHERE mid = $mid");
+// Fetch goals for the user
+$goalsQuery = "SELECT weight_goal, weekly_calories, weekly_duration FROM Goals WHERE mid = $mid";
+$goalsResult = $conn->query($goalsQuery);
 $goalsData = $goalsResult->fetch_assoc();
 
-// Fetch weekly exercise data
-$result = $conn->query("SELECT exercise_date, AVG(weight) AS avg_weight, SUM(duration_minutes) AS total_duration, SUM(calories_burned) AS total_calories
-                        FROM daily_exercises
-                        WHERE mid = $mid AND YEARWEEK(exercise_date, 1) = YEARWEEK(CURDATE(), 1)
-                        GROUP BY exercise_date
-                        ORDER BY exercise_date");
-
-
-// Store fetched data into an array
-$exerciseData = [];
-$totalCaloriesBurned = 0;
-$totalDuration = 0;
-while ($row = $result->fetch_assoc()) {
-    $exerciseData[] = $row;
-    $totalCaloriesBurned += $row['total_calories'];
-    $totalDuration += $row['total_duration'];
+// Generate 7-day date range (current day to 6 days ago)
+$dates = [];
+for ($i = 0; $i < 7; $i++) {
+    $dates[] = date('Y-m-d', strtotime("+$i days"));
 }
+
+// Fetch weekly exercise data for the user
+
+$exerciseQuery = "
+    WITH date_range AS (
+    SELECT CURDATE() + INTERVAL n DAY AS exercise_date
+    FROM (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 
+          UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6) AS days
+)
+SELECT 
+    d.exercise_date, 
+    COALESCE(AVG(e.weight), NULL) AS avg_weight, 
+    COALESCE(SUM(e.duration_minutes), 0) AS total_duration, 
+    COALESCE(SUM(e.calories_burned), 0) AS total_calories
+FROM 
+    date_range d
+LEFT JOIN 
+    daily_exercises e
+ON 
+    d.exercise_date = e.exercise_date AND e.mid = ?
+GROUP BY 
+    d.exercise_date
+ORDER BY 
+    d.exercise_date ASC;
+";
+
+$stmt = $conn->prepare($exerciseQuery);
+$stmt->bind_param("i", $mid); // Use the logged-in member's ID
+$stmt->execute();
+$exerciseResult = $stmt->get_result();
+
+// Map results to an array keyed by date
+$exerciseData = [];
+while ($row = $exerciseResult->fetch_assoc()) {
+    $exerciseData[$row['exercise_date']] = $row;
+}
+$stmt->close();
+
+// Merge with 7-day date range, filling in missing days with zeros
+$finalData = [];
+foreach ($dates as $date) {
+    if (array_key_exists($date, $exerciseData)) {
+        // Use data from exerciseData if available
+        $finalData[] = $exerciseData[$date];
+    } else {
+        // Fill with zero values if no data for the date
+        $finalData[] = [
+            'exercise_date' => $date,
+            'avg_weight' => null,
+            'total_duration' => 0,
+            'total_calories' => 0,
+        ];
+    }
+}
+
+
 // Calculate progress towards goals
+$totalCaloriesBurned = array_sum(array_column($finalData, 'total_calories'));
+$totalDuration = array_sum(array_column($finalData, 'total_duration'));
 $caloriesGoalProgress = ($goalsData && $goalsData['weekly_calories']) ? min(($totalCaloriesBurned / $goalsData['weekly_calories']) * 100, 100) : 0;
 $durationGoalProgress = ($goalsData && $goalsData['weekly_duration']) ? min(($totalDuration / $goalsData['weekly_duration']) * 100, 100) : 0;
 
 $conn->close();
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Import Bootstrap for styling an Chart.js  -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weekly Progress Chart</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-    <!-- Container for displaying goals progress -->
     <div class="container mt-5">
         <h1 class="text-center mb-4">Weekly Progress Chart</h1>
         <?php if ($goalsData): ?>
@@ -65,9 +113,9 @@ $conn->close();
                 <div class="card-body">
                     <h5 class="card-title">Progress Towards Weekly Goals</h5>
                     <p class="card-text">
-                        Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goalsData['weekly_calories'] ?>
+                        Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goalsData['weekly_calories'] ?> 
                         (<?= number_format($caloriesGoalProgress, 2) ?>%)<br>
-                        Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes
+                        Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes 
                         (<?= number_format($durationGoalProgress, 2) ?>%)
                     </p>
                 </div>
@@ -76,41 +124,37 @@ $conn->close();
             <p>No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>
         <?php endif; ?>
     </div>
-    <!-- Container  chart -->
     <div class="container mt-5">
-
         <div class="card shadow-sm">
             <div class="card-body">
                 <canvas id="weeklyProgressChart"></canvas>
             </div>
         </div>
     </div>
-    <!-- Back Button to FitnessTracker -->
     <div class="container text-center mt-4">
         <form action="FitnessTracker.php" method="get">
             <button type="submit" class="btn btn-primary">Back to Fitness Tracker</button>
         </form>
     </div>
-
     <script>
-        // Pass the PHP for chart
-        const exerciseData = <?php echo json_encode($exerciseData); ?>;
+        const exerciseData = <?php echo json_encode($finalData); ?>;
 
-        // Prep data for the chart
-        let labels = [];
-        let durations = [];
-        let calories = [];
-        let weights = [];
+        // Debug in browser
+        console.log("Chart Data:", exerciseData);
 
-        // Incorperate exercise data into labels and arrays
-        exerciseData.forEach(day => {
-            labels.push(day.exercise_date);
-            durations.push(day.total_duration);
-            calories.push(day.total_calories);
-            weights.push(day.avg_weight);
-        });
+        const labels = exerciseData.map(data => data.exercise_date);
+        const durations = exerciseData.map(data => data.total_duration || 0);
+        const calories = exerciseData.map(data => data.total_calories || 0);
+        const weights = exerciseData.map(data => data.avg_weight || null);
 
-        // Create the chart with Chart.js library
+        // Debug in browser
+        console.log("Labels:", labels);
+        console.log("Durations:", durations);
+        console.log("Calories:", calories);
+        console.log("Weights:", weights);
+
+
+        // Create the chart
         const ctx = document.getElementById('weeklyProgressChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
@@ -118,7 +162,6 @@ $conn->close();
                 labels: labels,
                 datasets: [
                     {
-                        //Duration
                         label: 'Duration (Minutes)',
                         data: durations,
                         backgroundColor: 'rgba(75, 192, 192, 0.5)',
@@ -127,7 +170,6 @@ $conn->close();
                         yAxisID: 'y-duration'
                     },
                     {
-                        //Calories Burnt
                         label: 'Calories Burned',
                         data: calories,
                         backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -136,7 +178,6 @@ $conn->close();
                         yAxisID: 'y-calories'
                     },
                     {
-                        //Weight LINED instead of bars
                         label: 'Weight (lbs)',
                         data: weights,
                         type: 'line',
@@ -187,7 +228,6 @@ $conn->close();
                             text: 'Calories Burned'
                         },
                         grid: {
-                            //avoid overlapp
                             drawOnChartArea: false
                         }
                     },
@@ -195,14 +235,11 @@ $conn->close();
                         type: 'linear',
                         position: 'right',
                         beginAtZero: false,
-                        min:150,
-                        max:250,
                         title: {
                             display: true,
                             text: 'Weight (lbs)'
                         },
                         grid: {
-                            //avoid overlap
                             drawOnChartArea: false
                         }
                     }

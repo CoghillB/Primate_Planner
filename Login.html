@@ -1,40 +1,24 @@
-<!--
-Created by Brayden Coghill and Ashton Irwin
-Date: December 4, 2024
-
-This page is the login page for the Primate Planner application. It allows users to enter their username and password
-to access their account. If the user does not have an account, they can click the "Create Account" link to be taken to
-the account creation page.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Link to the external CSS file for styling the login page -->
     <link rel="stylesheet" type="text/css" href="LoginStyle.css">
     <meta charset="UTF-8">
     <title>Login</title>
 </head>
 <body>
 <main>
-    <!-- Page Title -->
-    <h1 id="pageTitle">Weclome to Primate Planner</h1>
-
-    <!-- Login form with option to create account -->
-    <form method="post" action="UserLogin.php" id="loginForm">
+    <h1 id="pageTitle">Welcome to Primate Planner</h1>
+    <form method="post" action="UserLogin.php" id="loginForm" autocomplete="off">
         <h3>Login</h3>
-        <!-- Username input field -->
         <label for="username">Username:</label><br>
-        <input type="email" id="username" name="username" placeholder="Enter your email" required>
+        <input type="email" id="username" name="username" placeholder="Enter your email" required autocomplete="off">
         <br>
-        <!-- Password input field -->
         <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="new-password">
         <br>
-        <!-- Submit button for the login form -->
         <button type="submit" name="submit">Sign In</button>
         <br>
-        <!-- Link to the account creation page -->
-        <a href="CreateAccount.html" id="registerLink" name="createAccount">Create Account</a>
+        <a href="CreateAccount.html" id="registerLink">Create Account</a>
     </form>
 </main>
 </body>
