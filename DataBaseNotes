@@ -28,12 +28,12 @@ CREATE TABLE daily_exercises (
 
 INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
 VALUES
-(1, '2024-12-07', 180, 'Cardio', 45, 350),
-(1, '2024-12-08', 179, 'Weightlifting', 60, 400),
-(1, '2024-12-09', 179, 'Cardio', 30, 250),
-(1, '2024-12-10', 178, 'Hybrid', 50, 375),
-(1, '2024-12-11', 178, 'Cardio', 40, 320),
-(1, '2024-12-12', 177, 'Weightlifting', 70, 450);
+(4, '2024-12-07', 180, 'Cardio', 45, 350),
+(4, '2024-12-08', 179, 'Weightlifting', 60, 400),
+(4, '2024-12-09', 179, 'Cardio', 30, 250),
+(4, '2024-12-10', 178, 'Hybrid', 50, 375),
+(4, '2024-12-11', 178, 'Cardio', 40, 320),
+(4, '2024-12-12', 177, 'Weightlifting', 70, 450);
 (1, '2024-12-13', 177, 'Hybrid', 55, 400)
 
 

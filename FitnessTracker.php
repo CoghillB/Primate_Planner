@@ -16,17 +16,15 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if the user is logged in
 if (!isset($_SESSION['member_id'])) {
-    // Redirect to the login page if not logged in
-    header("Location: Login.html");
-    exit();
+    die("You must be logged in to access this page.");
 }
 
-$mid = $_SESSION['member_id']; // Use $mid consistently
+$mid = $_SESSION['member_id'];
+//echo "Debug: Logged-in Member ID: " . htmlspecialchars($mid) . "<br>";
 
 if (!$mid) {
-    die("You must be logged in to set fitness goals.");
+    die("Error: Member ID is null. Please log in.");
 }
 
 // Check if a form is submitted
@@ -37,18 +35,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $weekly_calories = (int)$_POST['caloriesGoal'];
         $weekly_duration = (int)$_POST['exercise'];
 
-        // Insert or update fitness goals
-        $stmt = $conn->prepare("INSERT INTO Goals (mid, weight_goal, weekly_calories, weekly_duration, created_at)
-                                VALUES (?, ?, ?, ?, NOW())
-                                ON DUPLICATE KEY UPDATE
-                                weight_goal = VALUES(weight_goal),
-                                weekly_calories = VALUES(weekly_calories),
-                                weekly_duration = VALUES(weekly_duration)");
-        $stmt->bind_param("iiii", $id, $weight_goal, $weekly_calories, $weekly_duration);
+                // Insert or update fitness goals
+        $stmt = $conn->prepare("
+            INSERT INTO Goals (mid, weight_goal, weekly_calories, weekly_duration, created_at)
+            VALUES (?, ?, ?, ?, NOW())
+            ON DUPLICATE KEY UPDATE
+                weight_goal = VALUES(weight_goal),
+                weekly_calories = VALUES(weekly_calories),
+                weekly_duration = VALUES(weekly_duration)
+        ");
+
+        if (!$stmt) {
+            die("Statement preparation failed: " . $conn->error);
+        }
+
+        // Debug output to ensure $mid is being passed correctly
+       // echo "Debug: Preparing to insert/update goals. Member ID: $mid, Weight Goal: $weight_goal, Weekly Calories: $weekly_calories, Weekly Duration: $weekly_duration<br>";
+
+        $stmt->bind_param("iiii", $mid, $weight_goal, $weekly_calories, $weekly_duration);
 
         if (!$stmt->execute()) {
-            echo "Error: " . $stmt->error;
+            die("Error executing statement: " . $stmt->error);
         }
+
         $stmt->close();
     } elseif (isset($_POST['date'], $_POST['dailyWeight'], $_POST['exerciseChoice'], $_POST['duration'])) {
         // Handle Exercise Form Submission
@@ -73,6 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Error updating weight: " . $stmt->error;
         }
         $stmt->close();
+           
+        var_dump($mid, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
 
         // Update the Goals table by subtracting the duration and calories burned
         $stmt = $conn->prepare("UPDATE Goals 
@@ -84,19 +95,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Error logging exercise: " . $stmt->error;
         }
         $stmt->close();
+        
+        $stmt = $conn->prepare("
+        INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            weight = VALUES(weight),
+            exercise_type = VALUES(exercise_type),
+            duration_minutes = VALUES(duration_minutes),
+            calories_burned = VALUES(calories_burned)
+        ");
 
-        // Insert or update daily exercise into `daily_exercises` table
-        $stmt = $conn->prepare("INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
-                                VALUES (?, ?, ?, ?, ?, ?)
-                                ON DUPLICATE KEY UPDATE
-                                weight = VALUES(weight),
-                                exercise_type = VALUES(exercise_type),
-                                duration_minutes = VALUES(duration_minutes),
-                                calories_burned = VALUES(calories_burned)");
-        $stmt->bind_param("isssid", $id, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
-        if (!$stmt->execute()) {
-            echo "Error logging exercise: " . $stmt->error;
+        if (!$stmt) {
+            die("Statement preparation failed: " . $conn->error);
         }
+
+        
+        $stmt->bind_param("isssid", $mid, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
+
+        if (!$stmt->execute()) {
+            die("Error executing query: " . $stmt->error);
+        }
+
         $stmt->close();
 
         // Redirect to the WeeklyProgress.php page to show the chart
