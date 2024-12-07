@@ -10,6 +10,7 @@ if ($conn->connect_error) {
 }
 
 // Start session/ set member ID test
+
 session_start();
 $_SESSION['member_id'] = 1;
 $mid = $_SESSION['member_id'] ?? null;
@@ -55,7 +56,7 @@ $conn->close();
     <title>Weekly Progress Chart</title>
 </head>
 <body>
-    
+
     <!-- Container for displaying goals progress -->
     <div class="container mt-5">
         <h1 class="text-center mb-4">Weekly Progress Chart</h1>
@@ -64,9 +65,9 @@ $conn->close();
                 <div class="card-body">
                     <h5 class="card-title">Progress Towards Weekly Goals</h5>
                     <p class="card-text">
-                        Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goalsData['weekly_calories'] ?> 
+                        Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goalsData['weekly_calories'] ?>
                         (<?= number_format($caloriesGoalProgress, 2) ?>%)<br>
-                        Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes 
+                        Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes
                         (<?= number_format($durationGoalProgress, 2) ?>%)
                     </p>
                 </div>
@@ -92,7 +93,7 @@ $conn->close();
     </div>
 
     <script>
-        // Pass the PHP for chart 
+        // Pass the PHP for chart
         const exerciseData = <?php echo json_encode($exerciseData); ?>;
 
         // Prep data for the chart
@@ -114,7 +115,7 @@ $conn->close();
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels, 
+                labels: labels,
                 datasets: [
                     {
                         //Duration
@@ -123,7 +124,7 @@ $conn->close();
                         backgroundColor: 'rgba(75, 192, 192, 0.5)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1,
-                        yAxisID: 'y-duration' 
+                        yAxisID: 'y-duration'
                     },
                     {
                         //Calories Burnt
@@ -132,19 +133,19 @@ $conn->close();
                         backgroundColor: 'rgba(255, 99, 132, 0.5)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1,
-                        yAxisID: 'y-calories' 
+                        yAxisID: 'y-calories'
                     },
                     {
                         //Weight LINED instead of bars
                         label: 'Weight (lbs)',
                         data: weights,
-                        type: 'line', 
+                        type: 'line',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 3,
                         pointBackgroundColor: 'rgba(54, 162, 235, 1)',
                         pointRadius: 4,
                         fill: false,
-                        yAxisID: 'y-weight' 
+                        yAxisID: 'y-weight'
                     }
                 ]
             },
@@ -152,10 +153,10 @@ $conn->close();
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top', 
+                        position: 'top',
                         labels: {
                             font: {
-                                size: 14 
+                                size: 14
                             }
                         }
                     },
@@ -163,7 +164,7 @@ $conn->close();
                         display: true,
                         text: 'Weekly Exercise Progress',
                         font: {
-                            size: 18 
+                            size: 18
                         }
                     }
                 },
@@ -171,7 +172,7 @@ $conn->close();
                     'y-duration': {
                         type: 'linear',
                         position: 'left',
-                        beginAtZero: true, 
+                        beginAtZero: true,
                         title: {
                             display: true,
                             text: 'Duration (Minutes)'
@@ -183,26 +184,26 @@ $conn->close();
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Calories Burned' 
+                            text: 'Calories Burned'
                         },
                         grid: {
                             //avoid overlapp
-                            drawOnChartArea: false 
+                            drawOnChartArea: false
                         }
                     },
                     'y-weight': {
                         type: 'linear',
                         position: 'right',
-                        beginAtZero: false, 
+                        beginAtZero: false,
                         min:150,
                         max:250,
                         title: {
                             display: true,
-                            text: 'Weight (lbs)' 
+                            text: 'Weight (lbs)'
                         },
                         grid: {
                             //avoid overlap
-                            drawOnChartArea: false 
+                            drawOnChartArea: false
                         }
                     }
                 }
