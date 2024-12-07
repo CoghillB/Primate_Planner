@@ -75,5 +75,4 @@ function is_valid_user($mysqli, $email, $password)
     // Assume password_verify is used after you have stored hashed passwords using password_hash
     return password_verify($password, $user['password']);
 }
-
 ?>
