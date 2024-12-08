@@ -4,8 +4,37 @@ Authors:
 Brayden Coghill
 Ashton Irwin
 
-This project utilizes a bar graph to track users progress (weightloss and workouts) over time.
-Gives a visual representation of the users progress. - Ashton
-Can navigate the calendar on the home screen to view specific months and days. - Brayden
+The main functionalities of this project are to help users track their fitness goals, specifically focusing on weight loss and workouts. Here's a summary of what our project does:
+
+1. User Authentication:
+   - The application includes a login system that verifies users through their username (email) and password. Upon successful login, users are redirected to the homepage, and their session is maintained. - Brayden
+
+2. Homepage:
+   - The homepage is designed to display a calendar feature where users can navigate through months and view specific days. This is likely used to manage and log specific fitness activities on selected dates. - Brayden
+   - Navbar is included for easy navigation to other pages, such as the fitness tracker, home page, and log out. - Brayden
+   - Navbar is created using Bootstrap, ensuring a responsive design that adapts to different screen sizes. - Brayden
+
+3. Fitness Tracker:
+   - Users can set their fitness goals, including target weight, weekly calorie goals, and exercise duration goals. - Ashton
+   - There's functionality to log daily exercises, including type, duration, and weight, which calculates the calories burned during those sessions.
+   - The application uses a mathematical formula to estimate caloric expenditure and tracks progress against the user's goals.
+   - Users can view their weekly progress on a separate page, analyzing if they are meeting their weekly fitness targets. - Ashton
+
+4. Database Interaction:
+   - Fitness data and user authentication information are stored and managed in a MySQL database. - Brayden & Ashton
+   - It updates user weight and logs exercises for both progress tracking and display on the fitness tracker dashboard. - Ashton
+
+5. Visual and Technical Features:
+   - The application uses a bar graph to visually represent the progress of the user over time. - Ashton
+   - It employs PHP for server-side logic, JavaScript for dynamic client-side functionalities and CSS/Bootstrap for styling and layout purposes. - Brayden & Ashton
+   - Bootstrap and Font Awesome are used for responsive design and iconography, ensuring a modern and user-friendly interface. - Brayden & Ashton
+
+6. Security:
+   - Care is taken to validate user inputs and securely handle passwords using PHP's `password_verify` function to protect user data.
+   - SSL certificate is used to encrypt data transmission between the client and server, ensuring secure communication.
+
+In summary, the "Primate Planner" project is a fitness-tracking web application that allows users to set goals, log exercises, view progress,
+and navigate their fitness journey with visual enhancements and secure, reliable data management.
+
 
 
