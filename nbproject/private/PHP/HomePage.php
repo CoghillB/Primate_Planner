@@ -18,7 +18,7 @@ if (!isset($_SESSION['member_id'])) {
     <!-- Title of the webpage -->
     <title>Home</title>
     <!-- Link to the external CSS file for styling the home page -->
-    <link rel="stylesheet" href="HomePageStyle.css">
+    <link rel="stylesheet" href="../CSS/HomePageStyle.css">
     <!-- Link to the Font Awesome library for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
@@ -40,7 +40,7 @@ if (!isset($_SESSION['member_id'])) {
             <ul class="navbar-nav ml-auto ms-auto">
                 <!-- Home link -->
                 <li class="nav-item active">
-                    <a class="nav-link" href="HomePage.html">Home</a>
+                    <a class="nav-link" href="../HTML/HomePage.html">Home</a>
                 </li>
                 <!-- Fitness Tracker link -->
                 <li class="nav-item">
@@ -55,6 +55,26 @@ if (!isset($_SESSION['member_id'])) {
     </nav>
 </header>
 <main>
+    <!-- Add a hidden modal popup to the HTML -->
+    <div id="event-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="title">Add Event</h2>
+            <form id="event-block">
+                <label for="event-name" class="label">Event Name:</label>
+                <input type="text" id="event-name" placeholder="Enter event name"/>
+                <br/>
+                <label for="event-date">Date:</label>
+                <input type="text" id="event-date" value="" disabled/>
+                <br/>
+                <label for="event-description">Description:</label><br/>
+                <textarea id="event-description" placeholder="Enter event description"></textarea>
+                <br/>
+                <button id="save-event">Save</button>
+                <button id="close-modal">Close</button>
+            </form>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="calendar">
             <div class="month">
@@ -129,12 +149,24 @@ if (!isset($_SESSION['member_id'])) {
         </div>
     </div>
 
+<!--  Display list of events that have been added to Calendar  -->
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h2>Upcoming Events</h2>
+                <ul id="events-list">
+                    <!-- List of upcoming events -->
+                </ul>
+                <button id="delete-event">Delete</button>
+            </div>
+        </div>
+
     <!-- Link to the Bootstrap CSS library -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
           crossorigin="anonymous">
     <!-- Link to the external JavaScript file for the home page -->
-    <script src="HomePage.js"></script>
+    <script src="../JavaScript/HomePage.js"></script>
 </main>
 </body>
 

@@ -1,10 +1,9 @@
 
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Quicksand", sans-serif, Arial, Helvetica;
+    font-family: Georgia, Arial, sans-serif;
 }
 
 main {
@@ -13,16 +12,16 @@ main {
 
 html {
     font-size: 62.5%;
-    background-color: #90AFC5;
+    background-color: #FFE6A9;
     height: 100%;
     margin: 0;
 }
 
-.container-fluid{
+.container-fluid {
 
     width: 100%;
     height: 100vh;
-    background-color: #90AFC5;
+    background-color: #659287;
     color: white;
     display: flex;
     justify-content: center;
@@ -32,21 +31,20 @@ html {
 .calendar {
     width: 45rem;
     height: 52rem;
-    background-color: #2A3132;
+    background-color: #B1C29E;
     border-radius: 1rem;
-    box-shadow: 0 0.5rem 3rem rgba(0, 0, 0, 0.4);
 }
 
 .month {
     width: 100%;
     height: 12rem;
-    background-color: #763626;
+    background-color: #DEAA79;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
     text-align: center;
-    text-shadow: 0 0.3rem rgba(0, 0, 0, 0.5);
+    /*text-shadow: 0 0.3rem rgba(0, 0, 0, 0.5);*/
     border-radius: 1rem 1rem 0 0;
 }
 
@@ -81,7 +79,7 @@ html {
     font-size: 1.5rem;
     font-weight: 400;
     letter-spacing: 0.1rem;
-    width: calc(44.2rem/7);
+    width: calc(44.2rem / 7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -99,7 +97,7 @@ html {
 .days div {
     font-size: 1.4rem;
     margin: 0.3rem;
-    width: calc(40.2rem/7);
+    width: calc(40.2rem / 7);
     font-weight: 300;
     height: 5rem;
     display: flex;
@@ -115,23 +113,23 @@ html {
 }
 
 .current-day {
-    background-color: #763626;
+    background-color: #659287;
 }
 
 .days div:hover:not(.current-day) {
-    background-color: #90AFC5;
-    border: .2rem solid #763626;
+    background-color: #FFE6A9;
+    border: .2rem solid #DEAA79;
 }
 
 .navbar {
     width: 100%;
     height: 5rem;
-    background-color: #2A3132;
+    background-color: #FFE6A9;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
-    box-shadow: 0 0.5rem 3rem #763626;
+    box-shadow: 0 0.5rem 3rem #DEAA79;
 }
 
 .logo {
@@ -141,11 +139,11 @@ html {
     letter-spacing: 0.2rem;
     margin-bottom: 1rem;
     text-align: center;
-    color: #763626;
+    color: #DEAA79;
 }
 
 .nav-item {
-    color: #763626;
+    color: #DEAA79;
     font-size: 1rem;
     font-weight: 400;
     letter-spacing: 0.1rem;
@@ -159,14 +157,67 @@ html {
 }
 
 #footer {
-    background-color: #2A3132;
-    color: #763626;
+    background-color: #659287;
+    color: #DEAA79;
     font-weight: bold;
     padding: 5px 0;
 }
 
 #footer a {
     padding: 0 10px 5px 10px;
+}
+
+.selected {
+    background-color: #f4a261;
+    color: white;
+    border-radius: 50%;
+}
+
+#event-modal {
+    width: 25%;
+    height: auto;
+    background-color: #659287;
+    color: white;
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+/*place the modal in middle of screen*/
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    padding: 1.5rem;
+}
+
+#event-block {
+    height: auto;
+    background-color: #DEAA79;
+    padding: 1.5rem;
+}
+
+#event-block label, input{
+    display: block;
+    margin: 0 auto;
+    font-size: 1.5rem;
+}
+/*    center the input and labels */
+
+
+#title {
+    font-size: 2.5rem;
+    font-weight: 400;
+    font-family: Georgia, Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    background-color: #B1C29E;
+
+    padding: 2rem 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 

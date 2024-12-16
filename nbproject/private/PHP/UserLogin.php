@@ -1,6 +1,6 @@
 <?php
 session_start();
-echo "<link rel='stylesheet' type='text/css' href='LoginStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../CSS/LoginStyle.css'>";
 
 // Define constants
 define('LOGIN_URL', 'Login.html');
@@ -19,7 +19,7 @@ define('INCORRECT_MSG', "
         <br>
         <button type='submit' name='submit'>Sign In</button>
         <br>
-        <a href='CreateAccount.html' id='registerLink'>Create Account</a>
+        <a href='../HTML/CreateAccount.html' id='registerLink'>Create Account</a>
         </form>
     </main>
 </body>");

@@ -1,11 +1,12 @@
 .navbar {
-    background-color: #763626 !important;
+    background-color:#B1C29E !important;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     height: 56px;
 }
 
 .content {
     margin-top: 12px;
+    color: #659287;
 }
 #navButtons {
     display: flex;
@@ -19,14 +20,14 @@
     border-radius: 15px;
     padding: 10px 20px;
     border: none;
-    background-color: #90AFC5;
+    background-color: #DEAA79;
     color: #2A3132;
     cursor: pointer;
     font-weight: bold;
 }
 #navButtons button:hover {
-    background-color: #763626;
-    color: #FFFFFF;
+    background-color: #FFE6A9;
+    color: #659287;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -38,19 +39,19 @@
 }
 
 .navbar .btn:hover {
-    background-color: #FFFFFF;
-    color: #763626;
+    background-color: #FFE6A9;
+    color: #B1C29E;
 }
 body {
-    background-color: #2A3132 !important;
+    background-color: #659287 !important;
     margin: 0;
     color: #FFFFFF;
     padding-top: 56px;
     overflow-x: hidden;
 }
 #goals, #exercises {
-    background-color: #90AFC5 !important;
-    border: 2px solid #FFFFFF !important;
+    background-color: #B1C29E !important;
+    border: 2px solid #659287 !important;
     border-radius: 15px !important;
     padding: 20px !important;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
@@ -59,8 +60,8 @@ body {
 }
 
 button, input[type="submit"], #historyLink {
-    background-color: #763626;
-    color: #FFFFFF;
+    background-color: #659287;
+    color: #2A3132;
     border: 2px solid #2A3132;
     border-radius: 15px;
     padding: 10px 20px;
@@ -71,7 +72,7 @@ button, input[type="submit"], #historyLink {
 }
 
 button:hover, input[type="submit"]:hover, #historyLink:hover {
-    background-color: #90AFC5;
-    color: #FFFFFF;
-    border: 2px solid #FFFFFF;
+    background-color: #DEAA79;
+    color: #659287;
+    border: 2px solid #659287;
 }

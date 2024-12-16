@@ -1,5 +1,5 @@
 <?php
-echo "<link rel='stylesheet' type='text/css' href='LoginStyle.css'>";
+echo "<link rel='stylesheet' type='text/css' href='../CSS/LoginStyle.css'>";
 // Retrieve form data with basic sanitization
 $fname = filter_input(INPUT_POST, 'fname', FILTER_SANITIZE_STRING);
 $lname = filter_input(INPUT_POST, 'lname', FILTER_SANITIZE_STRING);
@@ -49,7 +49,7 @@ if ($stmt) {
         <br>
         <button type='submit' name='submit'>Sign In</button>
         <br>
-        <a href='CreateAccount.html' id='registerLink' name='createAccount'>Create Account</a>
+        <a href='../HTML/CreateAccount.html' id='registerLink' name='createAccount'>Create Account</a>
     </form>
 </main>
 </body>";
@@ -71,7 +71,7 @@ if ($stmt) {
         <br>
         <button type='submit' name='submit'>Sign In</button>
         <br>
-        <a href='CreateAccount.html' id='registerLink'>Create Account</a>
+        <a href='../HTML/CreateAccount.html' id='registerLink'>Create Account</a>
     </form>
 </main>
 </body>";
