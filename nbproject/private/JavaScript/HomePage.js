@@ -87,100 +87,52 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Handle saving an event
+
+// Save the event
         document.getElementById("save-event").addEventListener("click", () => {
+            const eventDetailsField = document.getElementById("event-description");
+            const eventDetails = eventDetailsField.value.trim();
             const eventName = document.getElementById("event-name").value;
-            if (eventName === "") {
-                alert("Event name cannot be empty!");
+
+            if (!eventDetails) {
+                alert("Event details cannot be empty!");
                 return;
             }
-            alert(`Event "${eventName}" successfully added for ${clickedDate.toDateString()}!`);
+
+            const selectedDate = modalEventDate.value; // The date already present in the modal
+            const eventData = {
+                date: selectedDate,
+                name: eventName,
+                details: eventDetails,
+            };
+
+            // Save the event in local storage
+            const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
+            storedEvents.push(eventData);
+            localStorage.setItem("events", JSON.stringify(storedEvents));
+
+            // Close modal
             modal.style.display = "none";
+            eventDetailsField.value = ""; // Clear the event input field
+
+            console.log("Event Saved: ", eventData);
+
+
+            //debug
+            console.log("Event Saved: ", eventData);
+            // display all events that are saved in console
+            const allEvents = JSON.parse(localStorage.getItem("events"));
+            console.log("All Events: ", allEvents);
         });
-    });
 
-    // Object to store events for multiple dates
-    const events = {};
-
-    // Example: Adding or updating an event
-    document.getElementById("save-event").addEventListener("click", () => {
+        // Display the event in <ul id="events-list"> on the page as a list item
+        const eventsList = JSON.parse(localStorage.getItem("events")) || [];
         const eventName = document.getElementById("event-name").value;
+        const eventDate = modalEventDate.value;
         const eventDescription = document.getElementById("event-description").value;
-        const eventDate = modalEventDate.value; // Get the selected date
+        const eventItem = document.createElement("li");
+        eventItem.innerHTML = `<strong>${eventName}</strong> - ${eventDate} - ${eventDescription}`;
+        document.getElementById("events-list").appendChild(eventItem);
 
-        if (eventName === "") {
-            alert("Event name cannot be empty!");
-            return;
-        }
-
-        // Save the event to the `events` object
-        events[eventDate] = {name: eventName, description: eventDescription};
-
-        alert(`Event "${eventName}" added for ${eventDate}!`);
-        modal.style.display = "none";
-
-        console.log(events); // Debugging: Check the stored events
-    });
-
-    document.querySelector(".days").addEventListener("click", (event) => {
-        const selectedDay = event.target;
-
-        if (selectedDay.classList.contains("prev-date") || selectedDay.classList.contains("next-date") || selectedDay.textContent.trim() === "") {
-            return;
-        }
-
-        // Remove "selected" class from all previously selected days
-        const allDays = document.querySelectorAll(".days div");
-        allDays.forEach((day) => day.classList.remove("selected"));
-
-        // Add "selected" class to the clicked day
-        selectedDay.classList.add("selected");
-    });
-
-    const selectedDates = new Set();
-
-    document.querySelector(".days").addEventListener("click", (event) => {
-        const selectedDay = event.target;
-
-        if (selectedDay.classList.contains("prev-date") || selectedDay.classList.contains("next-date") || selectedDay.textContent.trim() === "") {
-            return;
-        }
-
-        const clickedDay = selectedDay.textContent.trim();
-        const clickedDate = new Date(date.getFullYear(), date.getMonth(), +clickedDay).toDateString();
-
-        // Toggle selection
-        if (selectedDates.has(clickedDate)) {
-            selectedDates.delete(clickedDate); // Unselect date
-            selectedDay.classList.remove("selected");
-        } else {
-            selectedDates.add(clickedDate); // Select date
-            selectedDay.classList.add("selected");
-        }
-
-        console.log(selectedDates); // Debugging: Check the selected dates
-    });
-
-    // Handle saving event when save button is clicked
-    document.getElementById("save-event").addEventListener("click", () => {
-        const eventName = document.getElementById("event-name").value;
-        const eventDate = document.getElementById("event-date").value;
-        const eventDescription = document.getElementById("event-description").value;
-
-        if (eventName === "") {
-            alert("Event name cannot be empty!");
-            return;
-        }
-        // Save the event to the `events` object
-        selectedDates.forEach((eventDate) => {
-            events[eventDate] = {name: eventName, description: eventDescription};
-        });
-
-        //Append the event to the #events-list list
-        const eventsList = document.getElementById("event-list");
-
-        selectedDates.forEach((eventDate) => {
-             // Create a list item
-            document.getElementsByTagName("li").appendChild(document.createTextNode(`${eventDate}: ${eventName}`));
-        });
     });
 });
