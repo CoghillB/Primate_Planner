@@ -160,30 +160,27 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(selectedDates); // Debugging: Check the selected dates
     });
 
-    // Save events
-    localStorage.setItem("userEvents", JSON.stringify(events));
+    // Handle saving event when save button is clicked
+    document.getElementById("save-event").addEventListener("click", () => {
+        const eventName = document.getElementById("event-name").value;
+        const eventDate = document.getElementById("event-date").value;
+        const eventDescription = document.getElementById("event-description").value;
 
-    // Retrieve events
-    const savedEvents = JSON.parse(localStorage.getItem("userEvents")) || {};
-    console.log(savedEvents);
-
-    // Delete selected event
-    document.getElementById("delete-event").addEventListener("click", () => {
-        const selectedDate = document.getElementById("event-date").value;
-        if (selectedDate in savedEvents) {
-            delete savedEvents[selectedDate];
-            alert(`Event for ${selectedDate} successfully deleted!`);
-        } else {
-            alert(`No event found for ${selectedDate}!`);
+        if (eventName === "") {
+            alert("Event name cannot be empty!");
+            return;
         }
-        localStorage.setItem("userEvents", JSON.stringify(savedEvents));
-    });
+        // Save the event to the `events` object
+        selectedDates.forEach((eventDate) => {
+            events[eventDate] = {name: eventName, description: eventDescription};
+        });
 
-    // Display saved events
-    const eventList = document.getElementById("userEvents");
-    for (const [date, event] of Object.entries(savedEvents)) {
-        const eventItem = document.createElement("li");
-        eventItem.textContent = `${date}: ${event.name} - ${event.description}`;
-        eventList.appendChild(eventItem);
-    }
+        //Append the event to the #events-list list
+        const eventsList = document.getElementById("event-list");
+
+        selectedDates.forEach((eventDate) => {
+             // Create a list item
+            document.getElementsByTagName("li").appendChild(document.createTextNode(`${eventDate}: ${eventName}`));
+        });
+    });
 });

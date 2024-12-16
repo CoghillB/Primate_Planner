@@ -6,6 +6,6 @@ session_unset();
 session_destroy();
 
 // Redirect to login page
-header("Location: Login.html");
+header("Location: /HTML/Login.html");
 exit();
 ?>
