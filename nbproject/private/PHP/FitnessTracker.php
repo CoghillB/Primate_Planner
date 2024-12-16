@@ -7,125 +7,95 @@ The page uses PHP to handle form submissions and interact with the database to s
 -->
 
 <?php
-session_start();
+session_start(); // Start session
+
+// Enable error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$conn = new mysqli('localhost', 'root', 'letmein', 'Primate_Planner');
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
+// Check if the user is logged in
 if (!isset($_SESSION['member_id'])) {
-    die("You must be logged in to access this page.");
+    die("Session error: User is not logged in. Please log in again.");
 }
 
-$mid = $_SESSION['member_id'];
-//echo "Debug: Logged-in Member ID: " . htmlspecialchars($mid) . "<br>";
+$jsonFile = '../PHP/data.json';
 
-if (!$mid) {
-    die("Error: Member ID is null. Please log in.");
+// Check if the JSON file exists
+if (!file_exists($jsonFile) || !is_readable($jsonFile)) {
+    die("Error: Cannot access JSON file at $jsonFile.");
 }
 
-// Check if a form is submitted
+// Load the current JSON data
+$data = json_decode(file_get_contents($jsonFile), true);
+if ($data === null) {
+    die("Error: JSON decoding failed: " . json_last_error_msg());
+}
+
+// Validate and fetch form data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['weight'], $_POST['caloriesGoal'], $_POST['exercise'])) {
-        // Handle Goals Form Submission
-        $weight_goal = (int)$_POST['weight'];
-        $weekly_calories = (int)$_POST['caloriesGoal'];
-        $weekly_duration = (int)$_POST['exercise'];
+    // Debug submitted data
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
 
-                // Insert or update fitness goals
-        $stmt = $conn->prepare("
-            INSERT INTO Goals (mid, weight_goal, weekly_calories, weekly_duration, created_at)
-            VALUES (?, ?, ?, ?, NOW())
-            ON DUPLICATE KEY UPDATE
-                weight_goal = VALUES(weight_goal),
-                weekly_calories = VALUES(weekly_calories),
-                weekly_duration = VALUES(weekly_duration)
-        ");
+    if (!isset($_POST['duration']) || !isset($_POST['calories_burned']) || !isset($_POST['date'])) {
+        die("Calories burned, duration, and date are required fields.");
+    }
 
-        if (!$stmt) {
-            die("Statement preparation failed: " . $conn->error);
+    $exerciseData = [
+        'date' => $_POST['date'], // Use the submitted date
+        'calories_burned' => intval($_POST['calories_burned']), // Use the value from the hidden field
+        'duration' => intval($_POST['duration']), // Use the submitted duration
+        'weight' => isset($_POST['dailyWeight']) ? intval($_POST['dailyWeight']) : null, // Optional weight
+        'exercise_type' => $_POST['exercise'] ?? 'unknown', // Optional exercise type
+    ];
+
+    // Locate the user
+    $member_id = $_SESSION['member_id'];
+    $userIndex = null;
+    foreach ($data['users'] as $index => $user) {
+        if ($user['id'] == $member_id) {
+            $userIndex = $index;
+            break;
         }
+    }
+    if ($userIndex === null) {
+        echo "Error: User with ID $member_id not found in JSON.";
+        exit();
+    }
 
-        // Debug output to ensure $mid is being passed correctly
-       // echo "Debug: Preparing to insert/update goals. Member ID: $mid, Weight Goal: $weight_goal, Weekly Calories: $weekly_calories, Weekly Duration: $weekly_duration<br>";
-
-        $stmt->bind_param("iiii", $mid, $weight_goal, $weekly_calories, $weekly_duration);
-
-        if (!$stmt->execute()) {
-            die("Error executing statement: " . $stmt->error);
+    // Check if the date already exists in the user's exercises
+    $existingIndex = null;
+    foreach ($data['users'][$userIndex]['exercises'] as $index => $exercise) {
+        if ($exercise['date'] === $exerciseData['date']) {
+            $existingIndex = $index;
+            break;
         }
+    }
 
-        $stmt->close();
-    } elseif (isset($_POST['date'], $_POST['dailyWeight'], $_POST['exerciseChoice'], $_POST['duration'])) {
-        // Handle Exercise Form Submission
-        $exercise_date = $_POST['date'];
-        $daily_weight = (int)$_POST['dailyWeight'];
-        $exercise_type = $_POST['exerciseChoice'];
-        $duration_minutes = (int)$_POST['duration'];
+    if ($existingIndex !== null) {
+        // Replace the existing data
+        $data['users'][$userIndex]['exercises'][$existingIndex] = $exerciseData;
+    } else {
+        // Append new data
+        $data['users'][$userIndex]['exercises'][] = $exerciseData;
+    }
 
-        $workOutValues = [
-            'cardio' => 7.0,
-            'weightLifting' => 4.0,
-            'hybrid' => 5.5
-        ];
-        $effortValue = $workOutValues[strtolower($exercise_type)] ?? 0;
-        $weightInKg = $daily_weight * 0.453592;
-        $calories_burned = $effortValue * 0.0175 * $weightInKg * $duration_minutes;
-
-        // Update the member's weight in the Members table
-        $stmt = $conn->prepare("UPDATE Members SET weight = ? WHERE id = ?");
-        $stmt->bind_param("ii", $daily_weight, $id);
-        if (!$stmt->execute()) {
-            echo "Error updating weight: " . $stmt->error;
-        }
-        $stmt->close();
-           
-        var_dump($mid, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
-
-        // Update the Goals table by subtracting the duration and calories burned
-        $stmt = $conn->prepare("UPDATE Goals 
-                                SET weekly_calories = GREATEST(weekly_calories - ?, 0),
-                                    weekly_duration = GREATEST(weekly_duration - ?, 0)
-                                WHERE mid = ?");
-        $stmt->bind_param("iii", $calories_burned, $duration_minutes, $id);
-        if (!$stmt->execute()) {
-            echo "Error logging exercise: " . $stmt->error;
-        }
-        $stmt->close();
-        
-        $stmt = $conn->prepare("
-        INSERT INTO daily_exercises (mid, exercise_date, weight, exercise_type, duration_minutes, calories_burned)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            weight = VALUES(weight),
-            exercise_type = VALUES(exercise_type),
-            duration_minutes = VALUES(duration_minutes),
-            calories_burned = VALUES(calories_burned)
-        ");
-
-        if (!$stmt) {
-            die("Statement preparation failed: " . $conn->error);
-        }
-
-        
-        $stmt->bind_param("isssid", $mid, $exercise_date, $daily_weight, $exercise_type, $duration_minutes, $calories_burned);
-
-        if (!$stmt->execute()) {
-            die("Error executing query: " . $stmt->error);
-        }
-
-        $stmt->close();
-
-        // Redirect to the WeeklyProgress.php page to show the chart
-        header("Location: WeeklyProgress.php");
+    // Save the updated data back to the JSON file
+    if (file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
+        die("Failed to write data to JSON file.");
+    } else {
+        header("Location: FitnessTracker.php?status=success");
         exit();
     }
 }
-$conn->close();
 ?>
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,12 +110,14 @@ $conn->close();
 <!-- Navbar -->
 <nav class="navbar navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
-        <span class="navbar-brand mx-auto text-center flex-grow-1">Fitness Tracker</span>
-        <form action="Logout.php" method="POST">
-            <button type="submit" class="btn btn-outline-light" id="logoutBTN">Log Out</button>
+        <span class="navbar-brand mx-auto text-center flex-grow-1">Primate Planner</span>
+        <form action="../PHP/Logout.php" method="POST">
+            <button type="submit" class="btn btn-outline-light logout-btn">Log Out</button>
         </form>
     </div>
 </nav>
+
+<h1 class="text-center">Fitness Tracker</h1>
 <div class="content">
     <!--Nav Buttons-->
     <div class="container" id="navButtons">
@@ -195,6 +167,7 @@ $conn->close();
             <!--Blanket formula to calculate net loss calories-->
             <label for="calories">Calories Burned:</label><br>
             <output id="caloriesBurned">0</output>
+            <input type="hidden" id="hiddenCaloriesBurned" name="calories_burned" value="0">
             <br>
             <input type="submit" value="Submit">
             <br>

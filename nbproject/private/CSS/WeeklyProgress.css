@@ -1,0 +1,124 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1030;
+    background-color: #B1C29E; /* Consistent background color */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for separation */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Align items with space between */
+    padding: 0 20px; /* Horizontal padding */
+    height: 56px; /* Navbar height */
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2A3132;
+    text-align: center;
+    margin: 0 auto; /* Center the brand in the navbar */
+    flex-grow: 1; /* Ensure it takes available space for centering */
+}
+
+.logout-container {
+    display: flex;
+    justify-content: flex-end; /* Keeps the button aligned to the right */
+    align-items: center;
+    padding-right: 20px; /* Adds spacing from the right edge */
+    flex-shrink: 0; /* Prevents the container from shrinking */
+}
+
+.logout-btn {
+    background-color: #B1C29E; /* Initial background color */
+    color: white; /* Initial text color */
+    border: 2px solid white; /* Initial border color */
+    border-radius: 15px; /* Rounded rectangle */
+    padding: 10px 20px; /* Consistent padding */
+    font-size: 1em; /* Match font size */
+    font-weight: bold; /* Bold text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Smooth transition for hover */
+}
+
+.logout-btn:hover {
+    background-color: #FFE6A9; /* Invert to hover background color */
+    color: #B1C29E; /* Invert to hover text color */
+    border: 2px solid white; /* Invert to hover border color */
+}
+
+
+
+body {
+    background-color: #659287 !important;
+    margin: 0;
+    color: #FFFFFF;
+    padding-top: 56px; /* Prevents content from overlapping the navbar */
+    overflow-x: hidden;
+}
+.content {
+    margin-top: 12px;
+    color: #659287;
+}
+
+#goals, #exercises {
+    background-color: #B1C29E !important;
+    border: 2px solid #659287 !important;
+    border-radius: 15px !important;
+    padding: 20px !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+    max-width: 500px !important;
+    margin: 20px auto !important;
+}
+
+#historyLink {
+    background-color: #659287;
+    color: #2A3132;
+    border: 2px solid #2A3132;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    display: inline-block; /* Ensures the button only takes up the width of its content */
+    margin: 20px auto; /* Centers the button horizontally */
+    text-align: center; /* Centers the text inside the button */
+}
+
+#historyLink:hover {
+    background-color: #DEAA79;
+    color: #659287;
+    border: 2px solid #659287;
+}
+button, input[type="submit"], #historyLink {
+    background-color: #659287;
+    color: #2A3132;
+    border: 2px solid #2A3132;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+button:hover, input[type="submit"]:hover, #historyLink:hover {
+    background-color: #DEAA79;
+    color: #659287;
+    border: 2px solid #659287;
+}
+.text-center {
+    text-align: center !important;
+    margin: 0 auto;
+}
+#navButtons {
+    display: flex;
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center;
+    gap: 10px; /* Adds spacing between buttons if there are multiple */
+    margin: 20px auto;
+    max-width: 500px; /* Optional: Limits the width of the container */
+    text-align: center; /* Ensures child elements are aligned */
+}

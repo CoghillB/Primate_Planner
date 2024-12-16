@@ -6,6 +6,6 @@ session_unset();
 session_destroy();
 
 // Redirect to login page
-header("Location: /HTML/Login.html");
+header("Location: ../PHP/UserLogin.php");
 exit();
 ?>

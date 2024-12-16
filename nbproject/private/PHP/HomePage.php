@@ -48,7 +48,7 @@ if (!isset($_SESSION['member_id'])) {
                 </li>
                 <!-- Logout link -->
                 <li class="nav-item">
-                    <a class="nav-link" href="Logout.php">Logout</a>
+                    <a class="nav-link" href="../PHP/Logout.php">Logout</a>
                 </li>
             </ul>
         </div>
@@ -149,26 +149,24 @@ if (!isset($_SESSION['member_id'])) {
         </div>
     </div>
 
-    <!--  Display list of events that have been added to Calendar  -->
-
-    <div class="container-fluid" id="upcoming-events">
+<!--  Display list of events that have been added to Calendar  -->
+    <div class="container">
         <div class="row">
             <div class="col">
-                <h2 id="events-title">Upcoming Events</h2>
+                <h2>Upcoming Events</h2>
                 <ul id="events-list">
                     <!-- List of upcoming events -->
-
                 </ul>
-                <button id="delete-event">Delete Event</button>
+                <button id="delete-event">Delete</button>
             </div>
         </div>
 
-        <!-- Link to the Bootstrap CSS library -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-              integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-              crossorigin="anonymous">
-        <!-- Link to the external JavaScript file for the home page -->
-        <script src="../JavaScript/HomePage.js"></script>
+    <!-- Link to the Bootstrap CSS library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <!-- Link to the external JavaScript file for the home page -->
+    <script src="../JavaScript/HomePage.js"></script>
 </main>
 </body>
 

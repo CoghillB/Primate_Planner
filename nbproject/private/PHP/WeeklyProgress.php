@@ -1,160 +1,123 @@
 <?php
 session_start();
-//echo "Logged-in member ID: " . ($_SESSION['member_id'] ?? 'Not Logged In') . "<br>";
 
-// Enable debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Redirect to login if not logged in
+// Check if the user is logged in
 if (!isset($_SESSION['member_id'])) {
-    header("Location: Login.html");
+    header("Location: ../PHP/UserLogin.php");
     exit();
 }
 
-$mid = $_SESSION['member_id'];
-
-// Database connection
-$conn = new mysqli('localhost', 'root', 'letmein', 'Primate_Planner');
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Load the JSON file
+$jsonFile = '../PHP/data.json';
+if (!file_exists($jsonFile)) {
+    die("JSON file not found at: $jsonFile");
 }
 
-// Fetch goals for the user
-$goalsQuery = "SELECT weight_goal, weekly_calories, weekly_duration FROM Goals WHERE mid = $mid";
-$goalsResult = $conn->query($goalsQuery);
-$goalsData = $goalsResult->fetch_assoc();
+$data = json_decode(file_get_contents($jsonFile), true);
+if ($data === null) {
+    die("Failed to decode JSON: " . json_last_error_msg());
+}
 
-// Generate 7-day date range (current day to 6 days ago)
+// Locate the logged-in user
+$user = null;
+foreach ($data['users'] as $u) {
+    if ($u['id'] == $_SESSION['member_id']) {
+        $user = $u;
+        break;
+    }
+}
+if (!$user) {
+    die("User data not found for member ID: " . $_SESSION['member_id']);
+}
+
+// Get goals and exercises
+$goals = $user['goals'] ?? [];
+$exercises = $user['exercises'] ?? [];
+
+// Generate a 7-day range starting from the current date
 $dates = [];
-for ($i = 0; $i < 7; $i++) {
+for ($i = 0; $i < 7; $i++) { // Start from today and go 6 days forward
     $dates[] = date('Y-m-d', strtotime("+$i days"));
 }
 
-// Fetch weekly exercise data for the user
 
-$exerciseQuery = "
-    WITH date_range AS (
-    SELECT CURDATE() + INTERVAL n DAY AS exercise_date
-    FROM (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 
-          UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6) AS days
-)
-SELECT 
-    d.exercise_date, 
-    COALESCE(AVG(e.weight), NULL) AS avg_weight, 
-    COALESCE(SUM(e.duration_minutes), 0) AS total_duration, 
-    COALESCE(SUM(e.calories_burned), 0) AS total_calories
-FROM 
-    date_range d
-LEFT JOIN 
-    daily_exercises e
-ON 
-    d.exercise_date = e.exercise_date AND e.mid = ?
-GROUP BY 
-    d.exercise_date
-ORDER BY 
-    d.exercise_date ASC;
-";
-
-$stmt = $conn->prepare($exerciseQuery);
-$stmt->bind_param("i", $mid); // Use the logged-in member's ID
-$stmt->execute();
-$exerciseResult = $stmt->get_result();
-
-// Map results to an array keyed by date
-$exerciseData = [];
-while ($row = $exerciseResult->fetch_assoc()) {
-    $exerciseData[$row['exercise_date']] = $row;
-}
-$stmt->close();
-
-// Merge with 7-day date range, filling in missing days with zeros
-$finalData = [];
+// Filter exercises for the last 7 days and map data for the chart
+$weeklyData = [];
 foreach ($dates as $date) {
-    if (array_key_exists($date, $exerciseData)) {
-        // Use data from exerciseData if available
-        $finalData[] = $exerciseData[$date];
-    } else {
-        // Fill with zero values if no data for the date
-        $finalData[] = [
-            'exercise_date' => $date,
-            'avg_weight' => null,
-            'total_duration' => 0,
-            'total_calories' => 0,
-        ];
-    }
+    $dailyData = array_filter($exercises, fn($e) => $e['date'] === $date);
+
+    $totalCalories = array_sum(array_column($dailyData, 'calories_burned'));
+    $totalDuration = array_sum(array_column($dailyData, 'duration'));
+    $avgWeight = count($dailyData) > 0 ? array_sum(array_column($dailyData, 'weight')) / count($dailyData) : null;
+
+    $weeklyData[] = [
+        'exercise_date' => $date,
+        'avg_weight' => $avgWeight,
+        'total_duration' => $totalDuration,
+        'total_calories' => $totalCalories,
+    ];
 }
 
-// Calculate progress towards goals
-$totalCaloriesBurned = array_sum(array_column($finalData, 'total_calories'));
-$totalDuration = array_sum(array_column($finalData, 'total_duration'));
-$caloriesGoalProgress = ($goalsData && $goalsData['weekly_calories']) ? min(($totalCaloriesBurned / $goalsData['weekly_calories']) * 100, 100) : 0;
-$durationGoalProgress = ($goalsData && $goalsData['weekly_duration']) ? min(($totalDuration / $goalsData['weekly_duration']) * 100, 100) : 0;
-
-$conn->close();
+// Calculate progress toward goals
+$totalCaloriesBurned = array_sum(array_column($weeklyData, 'total_calories'));
+$totalDuration = array_sum(array_column($weeklyData, 'total_duration'));
+$caloriesGoalProgress = ($goals['weekly_calories'] ?? 0) > 0 ? min(($totalCaloriesBurned / $goals['weekly_calories']) * 100, 100) : 0;
+$durationGoalProgress = ($goals['weekly_duration'] ?? 0) > 0 ? min(($totalDuration / $goals['weekly_duration']) * 100, 100) : 0;
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Progress Chart</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Weekly Progress</title>
+    <link rel="stylesheet" href="../CSS/WeeklyProgress.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Weekly Progress Chart</h1>
-    <?php if ($goalsData): ?>
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Progress Towards Weekly Goals</h5>
-                <p class="card-text">
-                    Calories Burned Goal: <?= htmlspecialchars($totalCaloriesBurned) ?>
-                    / <?= htmlspecialchars($goalsData['weekly_calories']) ?>
-                    (<?= number_format($caloriesGoalProgress, 2) ?>%)<br>
-                    Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes
-                    (<?= number_format($durationGoalProgress, 2) ?>%)
-                </p>
-            </div>
-        </div>
-    <?php else: ?>
-        <p>No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>
-    <?php endif; ?>
-</div>
-<div class="container mt-5">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <canvas id="weeklyProgressChart"></canvas>
-        </div>
-    </div>
-</div>
-<div class="container text-center mt-4">
-    <form action="FitnessTracker.php" method="get">
-        <button type="submit" class="btn btn-primary">Back to Fitness Tracker</button>
-    </form>
-</div>
-<script>
-    const exerciseData = <?php echo json_encode($finalData); ?>;
 
-    // Debug in browser
-    console.log("Chart Data:", exerciseData);
+<!-- Navbar -->
+<nav class="navbar">
+    <span class="navbar-brand">Primate Planner</span>
+    <div class="logout-container">
+        <button class="logout-btn" onclick="window.location.href='../PHP/Logout.php'">Log Out</button>
+    </div>
+</nav>
+
+
+<div class="text-center">
+    <h1>Weekly Progress</h1>
+</div>
+
+<main class="content">
+    <div id="goals">
+        <?php if ($goals): ?>
+            <h3 class="text-center">Progress Towards Weekly Goals</h3>
+            <p>Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goals['weekly_calories'] ?? 0 ?>
+                (<?= number_format($caloriesGoalProgress, 2) ?>%)</p>
+            <p>Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goals['weekly_duration'] ?? 0 ?> minutes
+                (<?= number_format($durationGoalProgress, 2) ?>%)</p>
+        <?php else: ?>
+            <p class="text-center">No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>
+        <?php endif; ?>
+    </div>
+
+    <div id="exercises">
+        <canvas id="weeklyProgressChart"></canvas>
+    </div>
+
+    <div id="navButtons">
+        <a href="../PHP/FitnessTracker.php" id="historyLink">Back to Fitness Tracker</a>
+    </div>
+</main>
+
+<script>
+    const exerciseData = <?php echo json_encode($weeklyData); ?>;
 
     const labels = exerciseData.map(data => data.exercise_date);
     const durations = exerciseData.map(data => data.total_duration || 0);
     const calories = exerciseData.map(data => data.total_calories || 0);
     const weights = exerciseData.map(data => data.avg_weight || null);
 
-    // Debug in browser
-    console.log("Labels:", labels);
-    console.log("Durations:", durations);
-    console.log("Calories:", calories);
-    console.log("Weights:", weights);
-
-
-    // Create the chart
     const ctx = document.getElementById('weeklyProgressChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
@@ -164,29 +127,26 @@ $conn->close();
                 {
                     label: 'Duration (Minutes)',
                     data: durations,
-                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    yAxisID: 'y-duration'
+                    backgroundColor: '#DEAA79',
+                    borderColor: '#DEAA79',
+                    borderWidth: 1
                 },
                 {
                     label: 'Calories Burned',
                     data: calories,
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                    yAxisID: 'y-calories'
+                    backgroundColor: '#659287',
+                    borderColor: '#659287',
+                    borderWidth: 1
                 },
                 {
                     label: 'Weight (lbs)',
                     data: weights,
                     type: 'line',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderColor: '#FFE6A9',
                     borderWidth: 3,
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointBackgroundColor: '#FFE6A9',
                     pointRadius: 4,
-                    fill: false,
-                    yAxisID: 'y-weight'
+                    fill: false
                 }
             ]
         },
@@ -194,54 +154,27 @@ $conn->close();
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'top',
                     labels: {
-                        font: {
-                            size: 14
-                        }
+                        color: '#2A3132'
                     }
                 },
                 title: {
                     display: true,
                     text: 'Weekly Exercise Progress',
-                    font: {
-                        size: 18
-                    }
+                    color: '#2A3132'
                 }
             },
             scales: {
-                'y-duration': {
-                    type: 'linear',
-                    position: 'left',
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Duration (Minutes)'
+                x: {
+                    ticks: {
+                        color: '#2A3132'
                     }
                 },
-                'y-calories': {
-                    type: 'linear',
-                    position: 'right',
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Calories Burned'
+                y: {
+                    ticks: {
+                        color: '#2A3132'
                     },
-                    grid: {
-                        drawOnChartArea: false
-                    }
-                },
-                'y-weight': {
-                    type: 'linear',
-                    position: 'right',
-                    beginAtZero: false,
-                    title: {
-                        display: true,
-                        text: 'Weight (lbs)'
-                    },
-                    grid: {
-                        drawOnChartArea: false
-                    }
+                    beginAtZero: true
                 }
             }
         }
