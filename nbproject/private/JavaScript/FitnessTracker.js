@@ -20,30 +20,28 @@ function updateDailyExercise(event) {
     const duration = parseFloat($('#duration').val());
 
     const caloriesBurned = calculateCaloriesBurned(weight, duration, activityType);
-    $('#calories').text(caloriesBurned);
-
-   // alert(`You burned ${caloriesBurned} calories during this exercise.`);
+    $('#caloriesBurned').text(caloriesBurned);
 }
 
-//this will take an array of weights and return the average weight forr the week
-function weeklyAverageWeight(weights){
+//this will take an array of weights and return the average weight for the week
+function weeklyAverageWeight(weights) {
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
     return (totalWeight / weights.length).toFixed(2);
 }
 
 //function to keep track of our goals
-function trackGoals(currentCalories, weeklyCalories, currentWeight, goalWeight){
-    const calorieProgress =((currentCalories / weeklyCalories) * 100).toFixed(2);
+function trackGoals(currentCalories, weeklyCalories, currentWeight, goalWeight) {
+    const calorieProgress = ((currentCalories / weeklyCalories) * 100).toFixed(2);
     const weightProgress = ((currentWeight / goalWeight) * 100).toFixed(2);
-    return{
+    return {
         calorieProgress,
         weightProgress
     };
 }
 
-$(document).ready(function(){
+$(document).ready(function () {
     // Logout button redirects to Login.html
-    $('#logoutBTN').on('click', function(){
+    $('#logoutBTN').on('click', function () {
         // Redirect to login page
         window.location.href = 'Login.html';
     });
@@ -83,4 +81,3 @@ $(document).ready(function(){
         }
     });
 });
-

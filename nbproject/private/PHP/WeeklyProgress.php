@@ -85,7 +85,6 @@ foreach ($dates as $date) {
     }
 }
 
-
 // Calculate progress towards goals
 $totalCaloriesBurned = array_sum(array_column($finalData, 'total_calories'));
 $totalDuration = array_sum(array_column($finalData, 'total_duration'));
@@ -106,146 +105,147 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Weekly Progress Chart</h1>
-        <?php if ($goalsData): ?>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Progress Towards Weekly Goals</h5>
-                    <p class="card-text">
-                        Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goalsData['weekly_calories'] ?> 
-                        (<?= number_format($caloriesGoalProgress, 2) ?>%)<br>
-                        Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes 
-                        (<?= number_format($durationGoalProgress, 2) ?>%)
-                    </p>
-                </div>
-            </div>
-        <?php else: ?>
-            <p>No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>
-        <?php endif; ?>
-    </div>
-    <div class="container mt-5">
-        <div class="card shadow-sm">
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Weekly Progress Chart</h1>
+    <?php if ($goalsData): ?>
+        <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <canvas id="weeklyProgressChart"></canvas>
+                <h5 class="card-title">Progress Towards Weekly Goals</h5>
+                <p class="card-text">
+                    Calories Burned Goal: <?= htmlspecialchars($totalCaloriesBurned) ?>
+                    / <?= htmlspecialchars($goalsData['weekly_calories']) ?>
+                    (<?= number_format($caloriesGoalProgress, 2) ?>%)<br>
+                    Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goalsData['weekly_duration'] ?> minutes
+                    (<?= number_format($durationGoalProgress, 2) ?>%)
+                </p>
             </div>
         </div>
+    <?php else: ?>
+        <p>No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>
+    <?php endif; ?>
+</div>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <canvas id="weeklyProgressChart"></canvas>
+        </div>
     </div>
-    <div class="container text-center mt-4">
-        <form action="FitnessTracker.php" method="get">
-            <button type="submit" class="btn btn-primary">Back to Fitness Tracker</button>
-        </form>
-    </div>
-    <script>
-        const exerciseData = <?php echo json_encode($finalData); ?>;
+</div>
+<div class="container text-center mt-4">
+    <form action="FitnessTracker.php" method="get">
+        <button type="submit" class="btn btn-primary">Back to Fitness Tracker</button>
+    </form>
+</div>
+<script>
+    const exerciseData = <?php echo json_encode($finalData); ?>;
 
-        // Debug in browser
-        console.log("Chart Data:", exerciseData);
+    // Debug in browser
+    console.log("Chart Data:", exerciseData);
 
-        const labels = exerciseData.map(data => data.exercise_date);
-        const durations = exerciseData.map(data => data.total_duration || 0);
-        const calories = exerciseData.map(data => data.total_calories || 0);
-        const weights = exerciseData.map(data => data.avg_weight || null);
+    const labels = exerciseData.map(data => data.exercise_date);
+    const durations = exerciseData.map(data => data.total_duration || 0);
+    const calories = exerciseData.map(data => data.total_calories || 0);
+    const weights = exerciseData.map(data => data.avg_weight || null);
 
-        // Debug in browser
-        console.log("Labels:", labels);
-        console.log("Durations:", durations);
-        console.log("Calories:", calories);
-        console.log("Weights:", weights);
+    // Debug in browser
+    console.log("Labels:", labels);
+    console.log("Durations:", durations);
+    console.log("Calories:", calories);
+    console.log("Weights:", weights);
 
 
-        // Create the chart
-        const ctx = document.getElementById('weeklyProgressChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Duration (Minutes)',
-                        data: durations,
-                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
-                        yAxisID: 'y-duration'
-                    },
-                    {
-                        label: 'Calories Burned',
-                        data: calories,
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1,
-                        yAxisID: 'y-calories'
-                    },
-                    {
-                        label: 'Weight (lbs)',
-                        data: weights,
-                        type: 'line',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 3,
-                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                        pointRadius: 4,
-                        fill: false,
-                        yAxisID: 'y-weight'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            font: {
-                                size: 14
-                            }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Weekly Exercise Progress',
+    // Create the chart
+    const ctx = document.getElementById('weeklyProgressChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Duration (Minutes)',
+                    data: durations,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y-duration'
+                },
+                {
+                    label: 'Calories Burned',
+                    data: calories,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y-calories'
+                },
+                {
+                    label: 'Weight (lbs)',
+                    data: weights,
+                    type: 'line',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointRadius: 4,
+                    fill: false,
+                    yAxisID: 'y-weight'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
                         font: {
-                            size: 18
+                            size: 14
                         }
                     }
                 },
-                scales: {
-                    'y-duration': {
-                        type: 'linear',
-                        position: 'left',
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Duration (Minutes)'
-                        }
+                title: {
+                    display: true,
+                    text: 'Weekly Exercise Progress',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            scales: {
+                'y-duration': {
+                    type: 'linear',
+                    position: 'left',
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Duration (Minutes)'
+                    }
+                },
+                'y-calories': {
+                    type: 'linear',
+                    position: 'right',
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Calories Burned'
                     },
-                    'y-calories': {
-                        type: 'linear',
-                        position: 'right',
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Calories Burned'
-                        },
-                        grid: {
-                            drawOnChartArea: false
-                        }
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                },
+                'y-weight': {
+                    type: 'linear',
+                    position: 'right',
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Weight (lbs)'
                     },
-                    'y-weight': {
-                        type: 'linear',
-                        position: 'right',
-                        beginAtZero: false,
-                        title: {
-                            display: true,
-                            text: 'Weight (lbs)'
-                        },
-                        grid: {
-                            drawOnChartArea: false
-                        }
+                    grid: {
+                        drawOnChartArea: false
                     }
                 }
             }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>
