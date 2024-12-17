@@ -28,9 +28,9 @@
             "password": "$2y$10$rre7tCHSckbpumgR4svkCuyq.IqAXIhjrhfJ8bZ6CuY.XNSHeCFuC",
             "weight": 180,
             "goals": {
-                "weight_goal": 175,
-                "weekly_calories": 1500,
-                "weekly_duration": 300
+                "weight": 178,
+                "calories_goal": 2500,
+                "exercise_goal": 350
             },
             "exercises": [
                 {

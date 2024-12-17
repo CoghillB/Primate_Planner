@@ -61,8 +61,11 @@ foreach ($dates as $date) {
 // Calculate progress toward goals
 $totalCaloriesBurned = array_sum(array_column($weeklyData, 'total_calories'));
 $totalDuration = array_sum(array_column($weeklyData, 'total_duration'));
-$caloriesGoalProgress = ($goals['weekly_calories'] ?? 0) > 0 ? min(($totalCaloriesBurned / $goals['weekly_calories']) * 100, 100) : 0;
-$durationGoalProgress = ($goals['weekly_duration'] ?? 0) > 0 ? min(($totalDuration / $goals['weekly_duration']) * 100, 100) : 0;
+$caloriesGoalProgress = ($goals['calories_goal'] ?? 0) > 0
+    ? min(($totalCaloriesBurned / $goals['calories_goal']) * 100, 100) : 0;
+
+$durationGoalProgress = ($goals['exercise_goal'] ?? 0) > 0
+    ? min(($totalDuration / $goals['exercise_goal']) * 100, 100) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,9 +95,9 @@ $durationGoalProgress = ($goals['weekly_duration'] ?? 0) > 0 ? min(($totalDurati
     <div id="goals">
         <?php if ($goals): ?>
             <h3 class="text-center">Progress Towards Weekly Goals</h3>
-            <p>Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goals['weekly_calories'] ?? 0 ?>
+            <p>Calories Burned Goal: <?= $totalCaloriesBurned ?> / <?= $goals['calories_goal'] ?? 0 ?>
                 (<?= number_format($caloriesGoalProgress, 2) ?>%)</p>
-            <p>Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goals['weekly_duration'] ?? 0 ?> minutes
+            <p>Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goals['exercise_goal'] ?? 0 ?> minutes
                 (<?= number_format($durationGoalProgress, 2) ?>%)</p>
         <?php else: ?>
             <p class="text-center">No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>

@@ -20,7 +20,7 @@ if (!isset($_SESSION['member_id'])) {
 
 $jsonFile = '../PHP/data.json';
 
-// Check if the JSON file exists
+// Check if the JSON file exists and is readable
 if (!file_exists($jsonFile) || !is_readable($jsonFile)) {
     die("Error: Cannot access JSON file at $jsonFile.");
 }
@@ -31,62 +31,91 @@ if ($data === null) {
     die("Error: JSON decoding failed: " . json_last_error_msg());
 }
 
-// Validate and fetch form data
+// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Debug submitted data
-    echo "<pre>";
-    print_r($_POST);
-    echo "</pre>";
+    // Check if Goals form was submitted
+    if (isset($_POST['weight'], $_POST['caloriesGoal'], $_POST['exercise'])) {
+        // Fetch submitted goals data
+        $goalsData = [
+            'weight' => intval($_POST['weight']),
+            'calories_goal' => intval($_POST['caloriesGoal']),
+            'exercise_goal' => intval($_POST['exercise'])
+        ];
 
-    if (!isset($_POST['duration']) || !isset($_POST['calories_burned']) || !isset($_POST['date'])) {
-        die("Calories burned, duration, and date are required fields.");
-    }
-
-    $exerciseData = [
-        'date' => $_POST['date'], // Use the submitted date
-        'calories_burned' => intval($_POST['calories_burned']), // Use the value from the hidden field
-        'duration' => intval($_POST['duration']), // Use the submitted duration
-        'weight' => isset($_POST['dailyWeight']) ? intval($_POST['dailyWeight']) : null, // Optional weight
-        'exercise_type' => $_POST['exercise'] ?? 'unknown', // Optional exercise type
-    ];
-
-    // Locate the user
-    $member_id = $_SESSION['member_id'];
-    $userIndex = null;
-    foreach ($data['users'] as $index => $user) {
-        if ($user['id'] == $member_id) {
-            $userIndex = $index;
-            break;
+        // Locate the user in the JSON file
+        $member_id = $_SESSION['member_id'];
+        $userIndex = null;
+        foreach ($data['users'] as $index => $user) {
+            if ($user['id'] == $member_id) {
+                $userIndex = $index;
+                break;
+            }
         }
-    }
-    if ($userIndex === null) {
-        echo "Error: User with ID $member_id not found in JSON.";
-        exit();
-    }
 
-    // Check if the date already exists in the user's exercises
-    $existingIndex = null;
-    foreach ($data['users'][$userIndex]['exercises'] as $index => $exercise) {
-        if ($exercise['date'] === $exerciseData['date']) {
-            $existingIndex = $index;
-            break;
+        // Error if user not found
+        if ($userIndex === null) {
+            die("Error: User not found in the data file.");
+        }
+
+        // Replace existing goals with new goals data
+        $data['users'][$userIndex]['goals'] = $goalsData;
+
+        // Save updated data back to JSON file
+        if (file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
+            die("Error: Failed to update goals in the data file.");
+        } else {
+            header("Location: FitnessTracker.php?status=goals_updated");
+            exit();
         }
     }
 
-    if ($existingIndex !== null) {
-        // Replace the existing data
-        $data['users'][$userIndex]['exercises'][$existingIndex] = $exerciseData;
-    } else {
-        // Append new data
-        $data['users'][$userIndex]['exercises'][] = $exerciseData;
-    }
+    // Check if Exercise form was submitted (existing logic)
+    if (isset($_POST['duration'], $_POST['calories_burned'], $_POST['date'])) {
+        $exerciseData = [
+            'date' => $_POST['date'],
+            'calories_burned' => intval($_POST['calories_burned']),
+            'duration' => intval($_POST['duration']),
+            'weight' => isset($_POST['dailyWeight']) ? intval($_POST['dailyWeight']) : null,
+            'exercise_type' => $_POST['exercise'] ?? 'unknown',
+        ];
 
-    // Save the updated data back to the JSON file
-    if (file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
-        die("Failed to write data to JSON file.");
-    } else {
-        header("Location: FitnessTracker.php?status=success");
-        exit();
+        // Locate the user
+        $member_id = $_SESSION['member_id'];
+        $userIndex = null;
+        foreach ($data['users'] as $index => $user) {
+            if ($user['id'] == $member_id) {
+                $userIndex = $index;
+                break;
+            }
+        }
+
+        if ($userIndex === null) {
+            die("Error: User with ID $member_id not found in JSON.");
+        }
+
+        // Check if the date already exists
+        $existingIndex = null;
+        foreach ($data['users'][$userIndex]['exercises'] as $index => $exercise) {
+            if ($exercise['date'] === $exerciseData['date']) {
+                $existingIndex = $index;
+                break;
+            }
+        }
+
+        // Replace or append exercise data
+        if ($existingIndex !== null) {
+            $data['users'][$userIndex]['exercises'][$existingIndex] = $exerciseData;
+        } else {
+            $data['users'][$userIndex]['exercises'][] = $exerciseData;
+        }
+
+        // Save the updated data back to the JSON file
+        if (file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT)) === false) {
+            die("Failed to write data to JSON file.");
+        } else {
+            header("Location: FitnessTracker.php?status=exercise_updated");
+            exit();
+        }
     }
 }
 ?>
