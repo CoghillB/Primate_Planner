@@ -62,6 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event Modal
     const modal = document.getElementById("event-modal");
     const modalEventDate = document.getElementById("event-date");
+    const modalEventTitle = document.getElementById("event-name");
+    const modalEventDescription = document.getElementById("event-description");
 
     document.querySelector(".days").addEventListener("click", (event) => {
         const selectedDay = event.target;
@@ -86,104 +88,87 @@ document.addEventListener("DOMContentLoaded", () => {
             modal.style.display = "none";
         });
 
-        // Handle saving an event
-        document.getElementById("save-event").addEventListener("click", () => {
-            const eventName = document.getElementById("event-name").value;
-            if (eventName === "") {
-                alert("Event name cannot be empty!");
-                return;
-            }
-            alert(`Event "${eventName}" successfully added for ${clickedDate.toDateString()}!`);
-            modal.style.display = "none";
-        });
     });
 
-    // Object to store events for multiple dates
-    const events = {};
+    // Append the event to <ul> element with id "events-list" using the input from user in the form with id "event-block" when the user clicks the "save-event" button.
 
-    // Example: Adding or updating an event
-    document.getElementById("save-event").addEventListener("click", () => {
-        const eventName = document.getElementById("event-name").value;
-        const eventDescription = document.getElementById("event-description").value;
-        const eventDate = modalEventDate.value; // Get the selected date
+    const saveEventButton = document.getElementById("save-event");
 
-        if (eventName === "") {
-            alert("Event name cannot be empty!");
+    const eventList = document.getElementById("events-list");
+
+    document.getElementById("event-block");
+    saveEventButton.addEventListener("click", () => {
+        event.preventDefault();
+
+        const eventName = modalEventTitle.value.trim();
+        const eventDescription = modalEventDescription.value.trim();
+        const eventDate = modalEventDate.value.trim();
+
+        // Validate input fields
+        if (!eventName || !eventDescription || !eventDate) {
+            alert("Please fill in all fields before saving the event.");
             return;
         }
 
-        // Save the event to the `events` object
-        events[eventDate] = {name: eventName, description: eventDescription};
+        // Create an event list item
+        const eventItem = document.createElement("li");
+        eventItem.innerHTML = `
+            <strong>${eventDate}:</strong> ${eventName} - ${eventDescription}
+        `;
 
-        alert(`Event "${eventName}" added for ${eventDate}!`);
+        // Append the new event to the event list
+        eventList.appendChild(eventItem);
+
+        // Clear the form fields
+        modalEventTitle.value = "";
+        modalEventDescription.value = "";
+        modalEventDate.value = "";
+
+        // Delete last added event
+
+
+        // Close the modal
         modal.style.display = "none";
 
-        console.log(events); // Debugging: Check the stored events
+        console.log(eventList); // Should not be null
+
     });
 
-    document.querySelector(".days").addEventListener("click", (event) => {
-        const selectedDay = event.target;
+    const deleteEventButton = document.getElementById("delete-event");
+    deleteEventButton.addEventListener("click", () => {
 
-        if (selectedDay.classList.contains("prev-date") || selectedDay.classList.contains("next-date") || selectedDay.textContent.trim() === "") {
-            return;
-        }
-
-        // Remove "selected" class from all previously selected days
-        const allDays = document.querySelectorAll(".days div");
-        allDays.forEach((day) => day.classList.remove("selected"));
-
-        // Add "selected" class to the clicked day
-        selectedDay.classList.add("selected");
-    });
-
-    const selectedDates = new Set();
-
-    document.querySelector(".days").addEventListener("click", (event) => {
-        const selectedDay = event.target;
-
-        if (selectedDay.classList.contains("prev-date") || selectedDay.classList.contains("next-date") || selectedDay.textContent.trim() === "") {
-            return;
-        }
-
-        const clickedDay = selectedDay.textContent.trim();
-        const clickedDate = new Date(date.getFullYear(), date.getMonth(), +clickedDay).toDateString();
-
-        // Toggle selection
-        if (selectedDates.has(clickedDate)) {
-            selectedDates.delete(clickedDate); // Unselect date
-            selectedDay.classList.remove("selected");
+        if (eventList.lastElementChild) {
+            // Remove the last `<li>` from the DOM
+            eventList.removeChild(eventList.lastElementChild);
         } else {
-            selectedDates.add(clickedDate); // Select date
-            selectedDay.classList.add("selected");
+            alert("No events to delete!");
         }
-
-        console.log(selectedDates); // Debugging: Check the selected dates
     });
 
-    // Save events
-    localStorage.setItem("userEvents", JSON.stringify(events));
+    // Logout button
+    const logoutButton = document.getElementById("logout-button");
 
-    // Retrieve events
-    const savedEvents = JSON.parse(localStorage.getItem("userEvents")) || {};
-    console.log(savedEvents);
+    logoutButton.addEventListener("click", () => {
+        // Make a request to the Logout.php script to destroy the server session
+        fetch('../PHP/Logout.php', {
+            method: 'GET', // Use GET to call the script
+            credentials: 'include' // Ensure cookies are included in the request
+        })
+            .then((response) => {
+                if (response.ok) {
+                    // Clear client-side session storage for extra security
+                    window.sessionStorage.clear();
 
-    // Delete selected event
-    document.getElementById("delete-event").addEventListener("click", () => {
-        const selectedDate = document.getElementById("event-date").value;
-        if (selectedDate in savedEvents) {
-            delete savedEvents[selectedDate];
-            alert(`Event for ${selectedDate} successfully deleted!`);
-        } else {
-            alert(`No event found for ${selectedDate}!`);
-        }
-        localStorage.setItem("userEvents", JSON.stringify(savedEvents));
+                    // Redirect the user to the login page after the session is destroyed
+                    window.location.href = "../PHP/UserLogin.php";
+                } else {
+                    // Handle any errors if the logout request fails
+                    console.error("Logout failed. Please try again.");
+                }
+            })
+            .catch((error) => {
+                // Log any unexpected errors
+                console.error("Error during the logout process:", error);
+            });
     });
-
-    // Display saved events
-    const eventList = document.getElementById("userEvents");
-    for (const [date, event] of Object.entries(savedEvents)) {
-        const eventItem = document.createElement("li");
-        eventItem.textContent = `${date}: ${event.name} - ${event.description}`;
-        eventList.appendChild(eventItem);
-    }
 });
