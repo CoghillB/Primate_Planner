@@ -66,6 +66,21 @@ $caloriesGoalProgress = ($goals['calories_goal'] ?? 0) > 0
 
 $durationGoalProgress = ($goals['exercise_goal'] ?? 0) > 0
     ? min(($totalDuration / $goals['exercise_goal']) * 100, 100) : 0;
+
+// Fetch the user's initial weight (from goals or first recorded weight)
+$initialWeight = $user['weight'] ?? null;
+// If initial weight is not set, fallback to the first exercise entry's weight
+if (!$initialWeight) {
+    foreach ($exercises as $exercise) {
+        if (isset($exercise['weight']) && is_numeric($exercise['weight'])) {
+            $initialWeight = $exercise['weight'];
+            break;
+        }
+    }
+}
+$weightGoal = $goals['weight'] ?? 150;
+echo "<script>console.log('Initial wight Goal:', " . json_encode($initialWeight) . ");</script>";
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -104,7 +119,7 @@ $durationGoalProgress = ($goals['exercise_goal'] ?? 0) > 0
         <?php endif; ?>
     </div>
 
-    <div id="exercises">
+    <div id="exercises" style="width: 100%; margin: auto;">
         <canvas id="weeklyProgressChart"></canvas>
     </div>
 
@@ -114,32 +129,40 @@ $durationGoalProgress = ($goals['exercise_goal'] ?? 0) > 0
 </main>
 
 <script>
-    const exerciseData = <?php echo json_encode($weeklyData); ?>;
 
+    const exerciseData = <?php echo json_encode($weeklyData); ?>;
+    const weightGoal = <?= json_encode($weightGoal); ?>;
     const labels = exerciseData.map(data => data.exercise_date);
     const durations = exerciseData.map(data => data.total_duration || 0);
     const calories = exerciseData.map(data => data.total_calories || 0);
     const weights = exerciseData.map(data => data.avg_weight || null);
-
+    console.log("Weights Data:", weights);
     const ctx = document.getElementById('weeklyProgressChart').getContext('2d');
-    new Chart(ctx, {
+
+    // Calculate the min and max range for the weight axis
+    const weightMin = weightGoal - 20;
+    const weightMax = weightGoal + 20;
+
+    const chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
+            labels: labels, // Dates for X-axis
             datasets: [
                 {
                     label: 'Duration (Minutes)',
                     data: durations,
                     backgroundColor: '#DEAA79',
                     borderColor: '#DEAA79',
-                    borderWidth: 1
+                    borderWidth: 1,
+                    yAxisID: 'y-left' // Left Y-axis
                 },
                 {
                     label: 'Calories Burned',
                     data: calories,
                     backgroundColor: '#659287',
                     borderColor: '#659287',
-                    borderWidth: 1
+                    borderWidth: 1,
+                    yAxisID: 'y-right' // Right Y-axis for Calories
                 },
                 {
                     label: 'Weight (lbs)',
@@ -149,12 +172,14 @@ $durationGoalProgress = ($goals['exercise_goal'] ?? 0) > 0
                     borderWidth: 3,
                     pointBackgroundColor: '#FFE6A9',
                     pointRadius: 4,
-                    fill: false
+                    fill: false,
+                    yAxisID: 'y-weight' // Separate Y-axis for Weight
                 }
             ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
                     labels: {
@@ -174,14 +199,60 @@ $durationGoalProgress = ($goals['exercise_goal'] ?? 0) > 0
                     }
                 },
                 y: {
-                    ticks: {
+                    id: 'y-left',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Duration (Minutes)',
                         color: '#2A3132'
                     },
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#2A3132'
+                    }
+                },
+                'y-right': {
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Calories Burned',
+                        color: '#659287'
+                    },
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        color: '#659287'
+                    }
+                },
+                'y-weight': {
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Weight (lbs)',
+                        color: '#FFE6A9'
+                    },
+                    min: weightGoal - 20, // Force minimum range
+                    max: weightGoal + 20, // Force maximum range
+                    grid: {
+                        drawOnChartArea: false // Prevent grid overlap
+                    },
+                    ticks: {
+                        color: '#FFE6A9'
+                    }
                 }
             }
         }
     });
+
+
+    // Force resize on window resize
+    window.addEventListener('resize', () => {
+        chart.resize();
+    });
+
+
 </script>
 </body>
 </html>

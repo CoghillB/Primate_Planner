@@ -28,9 +28,9 @@
             "password": "$2y$10$rre7tCHSckbpumgR4svkCuyq.IqAXIhjrhfJ8bZ6CuY.XNSHeCFuC",
             "weight": 180,
             "goals": {
-                "weight": 178,
-                "calories_goal": 2500,
-                "exercise_goal": 350
+                "weight": 160,
+                "calories_goal": 2000,
+                "exercise_goal": 200
             },
             "exercises": [
                 {
@@ -80,6 +80,13 @@
                     "calories_burned": 294,
                     "duration": 30,
                     "weight": 177,
+                    "exercise_type": "cardio"
+                },
+                {
+                    "date": "2024-12-23",
+                    "calories_burned": 595,
+                    "duration": 60,
+                    "weight": 178,
                     "exercise_type": "cardio"
                 }
             ]
