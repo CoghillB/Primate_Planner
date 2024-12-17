@@ -108,8 +108,20 @@
             "email": "test@test.com",
             "password": "$2y$10$WOojyV83F2.gmqsVp9LCEu3Dgs\/qQUnzs9z14Lk1RRmyGAJFrDv6W",
             "weight": null,
-            "goals": null,
-            "exercises": []
+            "goals": {
+                "weight": 190,
+                "calories_goal": 3000,
+                "exercise_goal": 300
+            },
+            "exercises": [
+                {
+                    "date": "2024-12-17",
+                    "calories_burned": 2230,
+                    "duration": 200,
+                    "weight": 200,
+                    "exercise_type": "cardio"
+                }
+            ]
         },
         {
             "id": 6,

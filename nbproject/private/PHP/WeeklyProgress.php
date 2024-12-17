@@ -78,8 +78,30 @@ if (!$initialWeight) {
         }
     }
 }
-$weightGoal = $goals['weight'] ?? 150;
-echo "<script>console.log('Initial wight Goal:', " . json_encode($initialWeight) . ");</script>";
+//$weightGoal = $goals['weight'] ?? 150;
+// Determine the user's current weight (latest weight from exercises or default to user's weight)
+$currentWeight = $user['weight'] ?? null;
+
+// If exercises exist, find the latest weight from exercises
+foreach (array_reverse($exercises) as $exercise) {
+    if (isset($exercise['weight']) && is_numeric($exercise['weight'])) {
+        $currentWeight = $exercise['weight'];
+        break;
+    }
+}
+
+// Calculate progress toward the weight goal
+$weightGoal = $goals['weight'] ?? 150; // Weight goal from goals
+$weightProgress = null;
+$weightRemaining = null;
+
+if ($currentWeight && $weightGoal) {
+    $totalWeightToLose = abs($currentWeight - $weightGoal);
+    $weightRemaining = max($currentWeight - $weightGoal, 0); // How much weight is left
+    $weightProgress = (($totalWeightToLose - $weightRemaining) / $totalWeightToLose) * 100;
+
+    if ($weightProgress > 100) $weightProgress = 100; // Cap progress at 100%
+}
 
 ?>
 <!DOCTYPE html>
@@ -117,10 +139,19 @@ echo "<script>console.log('Initial wight Goal:', " . json_encode($initialWeight)
                 (<?= number_format($caloriesGoalProgress, 2) ?>%)</p>
             <p>Exercise Duration Goal: <?= $totalDuration ?> minutes / <?= $goals['exercise_goal'] ?? 0 ?> minutes
                 (<?= number_format($durationGoalProgress, 2) ?>%)</p>
+
+            <?php if (isset($weightGoal) && isset($currentWeight)): ?>
+                <p>Weight Goal: <?= $currentWeight ?> lbs / <?= $weightGoal ?> lbs
+                    (<?= number_format($weightRemaining, 1) ?> lbs left to go!!!)</p>
+            <?php else: ?>
+                <p>Weight Goal: No weight goal has been set yet.</p>
+            <?php endif; ?>
+
         <?php else: ?>
             <p class="text-center">No goals have been set yet. Please set your goals in the Fitness Tracker page.</p>
         <?php endif; ?>
     </div>
+
 
     <div id="exercises" style="width: 100%; margin: auto;">
         <canvas id="weeklyProgressChart"></canvas>
@@ -138,13 +169,15 @@ echo "<script>console.log('Initial wight Goal:', " . json_encode($initialWeight)
     const labels = exerciseData.map(data => data.exercise_date);
     const durations = exerciseData.map(data => data.total_duration || 0);
     const calories = exerciseData.map(data => data.total_calories || 0);
+
+
     const weights = exerciseData.map(data => data.avg_weight || null);
     console.log("Weights Data:", weights);
     const ctx = document.getElementById('weeklyProgressChart').getContext('2d');
 
     // Calculate the min and max range for the weight axis
-    const weightMin = weightGoal - 20;
-    const weightMax = weightGoal + 20;
+    const weightMin = weightGoal - 50;
+    const weightMax = weightGoal + 50;
 
     const chart = new Chart(ctx, {
         type: 'bar',
@@ -236,8 +269,8 @@ echo "<script>console.log('Initial wight Goal:', " . json_encode($initialWeight)
                         text: 'Weight (lbs)',
                         color: '#FFE6A9'
                     },
-                    min: weightGoal - 20, // Force minimum range
-                    max: weightGoal + 20, // Force maximum range
+                    min: weightGoal - 30, // Force minimum range
+                    max: weightGoal + 30, // Force maximum range
                     grid: {
                         drawOnChartArea: false // Prevent grid overlap
                     },

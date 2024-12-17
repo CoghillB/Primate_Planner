@@ -14,9 +14,9 @@
 }
 
 .navbar-brand {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #2A3132;
+    color: #ffffff !important;
     text-align: center;
     margin: 0 auto;
     flex-grow: 1;

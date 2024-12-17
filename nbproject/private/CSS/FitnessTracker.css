@@ -25,6 +25,12 @@
     cursor: pointer;
     font-weight: bold;
 }
+.navbar-brand {
+    font-size: 1.8rem;
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
 #navButtons button:hover {
     background-color: #FFE6A9;
     color: #659287;
