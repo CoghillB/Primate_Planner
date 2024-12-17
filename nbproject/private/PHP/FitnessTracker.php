@@ -8,7 +8,7 @@ The page uses PHP to handle form submissions and interact with the database to s
 
 <?php
 session_start(); // Start session
-
+require_once 'LoadUser.php';
 // Enable error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button class="btn btn-outline-light" onclick="window.location.href='Homepage.php'">Home</button>
 
         <!-- Centered Navbar Title -->
-        <span class="navbar-brand mx-auto text-center flex-grow-1">Primate Planner</span>
+        <span class="navbar-brand mx-auto text-center flex-grow-1"><?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?></span>
 
         <!-- Logout Button -->
         <form action="../PHP/Logout.php" method="POST">

@@ -1,3 +1,13 @@
+<?php
+session_start();
+require_once 'LoadUser.php';
+// Check if the user is logged in
+if (!isset($_SESSION['member_id'])) {
+    header("Location: UserLogin.php?message=please_login");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +32,7 @@
     <!-- Navigation bar -->
     <nav class="navbar navbar-expand-sm w-100 fixed-top">
         <!-- Logo of the website -->
-        <p class="logo">Primate Planner</p>
+        <p class="logo">Primate Planner: Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?></p>
         <!-- Button for toggling the navigation menu on small screens -->
         <button class="navbar-toggler ml-auto" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"

@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+require_once 'LoadUser.php';
 // Check if the user is logged in
 if (!isset($_SESSION['member_id'])) {
     header("Location: ../PHP/UserLogin.php");
@@ -98,7 +98,7 @@ echo "<script>console.log('Initial wight Goal:', " . json_encode($initialWeight)
     <div class="home-container">
         <button class="logout-btn" onclick="window.location.href='Homepage.php'">Home</button>
     </div>
-    <span class="navbar-brand">Primate Planner</span>
+    <span class="navbar-brand"><?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?></span>
     <div class="logout-container">
         <button class="logout-btn" onclick="window.location.href='../PHP/Logout.php'">Log Out</button>
     </div>
