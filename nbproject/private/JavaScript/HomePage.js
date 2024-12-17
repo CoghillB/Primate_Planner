@@ -62,6 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event Modal
     const modal = document.getElementById("event-modal");
     const modalEventDate = document.getElementById("event-date");
+    const modalEventTitle = document.getElementById("event-name");
+    const modalEventDescription = document.getElementById("event-description");
 
     document.querySelector(".days").addEventListener("click", (event) => {
         const selectedDay = event.target;
@@ -86,53 +88,87 @@ document.addEventListener("DOMContentLoaded", () => {
             modal.style.display = "none";
         });
 
-        // Handle saving an event
+    });
 
-// Save the event
-        document.getElementById("save-event").addEventListener("click", () => {
-            const eventDetailsField = document.getElementById("event-description");
-            const eventDetails = eventDetailsField.value.trim();
-            const eventName = document.getElementById("event-name").value;
+    // Append the event to <ul> element with id "events-list" using the input from user in the form with id "event-block" when the user clicks the "save-event" button.
 
-            if (!eventDetails) {
-                alert("Event details cannot be empty!");
-                return;
-            }
+    const saveEventButton = document.getElementById("save-event");
 
-            const selectedDate = modalEventDate.value; // The date already present in the modal
-            const eventData = {
-                date: selectedDate,
-                name: eventName,
-                details: eventDetails,
-            };
+    const eventList = document.getElementById("events-list");
 
-            // Save the event in local storage
-            const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
-            storedEvents.push(eventData);
-            localStorage.setItem("events", JSON.stringify(storedEvents));
+    document.getElementById("event-block");
+    saveEventButton.addEventListener("click", () => {
+        event.preventDefault();
 
-            // Close modal
-            modal.style.display = "none";
-            eventDetailsField.value = ""; // Clear the event input field
+        const eventName = modalEventTitle.value.trim();
+        const eventDescription = modalEventDescription.value.trim();
+        const eventDate = modalEventDate.value.trim();
 
-            console.log("Event Saved: ", eventData);
+        // Validate input fields
+        if (!eventName || !eventDescription || !eventDate) {
+            alert("Please fill in all fields before saving the event.");
+            return;
+        }
 
-
-            //debug
-            console.log("Event Saved: ", eventData);
-            // display all events that are saved in console
-            const allEvents = JSON.parse(localStorage.getItem("events"));
-            console.log("All Events: ", allEvents);
-        });
-
-        // Display the event in <ul id="events-list"> on the page as a list item
-        const eventsList = JSON.parse(localStorage.getItem("events")) || [];
-        const eventName = document.getElementById("event-name").value;
-        const eventDate = modalEventDate.value;
-        const eventDescription = document.getElementById("event-description").value;
+        // Create an event list item
         const eventItem = document.createElement("li");
-        eventItem.innerHTML = `<strong>${eventName}</strong> - ${eventDate} - ${eventDescription}`;
-        document.getElementById("events-list").appendChild(eventItem);
+        eventItem.innerHTML = `
+            <strong>${eventDate}:</strong> ${eventName} - ${eventDescription}
+        `;
 
+        // Append the new event to the event list
+        eventList.appendChild(eventItem);
+
+        // Clear the form fields
+        modalEventTitle.value = "";
+        modalEventDescription.value = "";
+        modalEventDate.value = "";
+
+        // Delete last added event
+
+
+        // Close the modal
+        modal.style.display = "none";
+
+        console.log(eventList); // Should not be null
+
+    });
+
+    const deleteEventButton = document.getElementById("delete-event");
+    deleteEventButton.addEventListener("click", () => {
+
+        if (eventList.lastElementChild) {
+            // Remove the last `<li>` from the DOM
+            eventList.removeChild(eventList.lastElementChild);
+        } else {
+            alert("No events to delete!");
+        }
+    });
+
+    // Logout button
+    const logoutButton = document.getElementById("logout-button");
+
+    logoutButton.addEventListener("click", () => {
+        // Make a request to the Logout.php script to destroy the server session
+        fetch('../PHP/Logout.php', {
+            method: 'GET', // Use GET to call the script
+            credentials: 'include' // Ensure cookies are included in the request
+        })
+            .then((response) => {
+                if (response.ok) {
+                    // Clear client-side session storage for extra security
+                    window.sessionStorage.clear();
+
+                    // Redirect the user to the login page after the session is destroyed
+                    window.location.href = "../PHP/UserLogin.php";
+                } else {
+                    // Handle any errors if the logout request fails
+                    console.error("Logout failed. Please try again.");
+                }
+            })
+            .catch((error) => {
+                // Log any unexpected errors
+                console.error("Error during the logout process:", error);
+            });
     });
 });

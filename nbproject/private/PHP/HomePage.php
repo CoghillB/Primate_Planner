@@ -1,13 +1,3 @@
-<?php
-session_start();
-
-// Check if the user is logged in
-if (!isset($_SESSION['member_id'])) {
-    // If not logged in, redirect to the login page
-    header("Location: Login.html");
-    exit();
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +11,16 @@ if (!isset($_SESSION['member_id'])) {
     <link rel="stylesheet" href="../CSS/HomePageStyle.css">
     <!-- Link to the Font Awesome library for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Link to the Bootstrap CSS library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+
 </head>
 <body>
 <header>
     <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark w-100 fixed-top">
+    <nav class="navbar navbar-expand-sm w-100 fixed-top">
         <!-- Logo of the website -->
         <p class="logo">Primate Planner</p>
         <!-- Button for toggling the navigation menu on small screens -->
@@ -40,7 +35,7 @@ if (!isset($_SESSION['member_id'])) {
             <ul class="navbar-nav ml-auto ms-auto">
                 <!-- Home link -->
                 <li class="nav-item active">
-                    <a class="nav-link" href="../HTML/HomePage.html">Home</a>
+                    <a class="nav-link" href="../PHP/HomePage.php">Home</a>
                 </li>
                 <!-- Fitness Tracker link -->
                 <li class="nav-item">
@@ -48,7 +43,7 @@ if (!isset($_SESSION['member_id'])) {
                 </li>
                 <!-- Logout link -->
                 <li class="nav-item">
-                    <a class="nav-link" href="../PHP/Logout.php">Logout</a>
+                    <a class="nav-link"  id="logout-button" href="../PHP/Logout.php">Logout</a>
                 </li>
             </ul>
         </div>
@@ -61,16 +56,17 @@ if (!isset($_SESSION['member_id'])) {
             <h2 id="title">Add Event</h2>
             <form id="event-block">
                 <label for="event-name" class="label">Event Name:</label>
-                <input type="text" id="event-name" placeholder="Enter event name"/>
+                <input type="text" id="event-name" name="event_name" placeholder="Enter event name"/>
                 <br/>
                 <label for="event-date">Date:</label>
-                <input type="text" id="event-date" value="" disabled/>
+                <input type="text" id="event-date" name="event_date" value="" disabled/>
                 <br/>
                 <label for="event-description">Description:</label><br/>
-                <textarea id="event-description" placeholder="Enter event description"></textarea>
+                <textarea id="event-description" name="event_description"
+                          placeholder="Enter event description"></textarea>
                 <br/>
-                <button id="save-event">Save</button>
-                <button id="close-modal">Close</button>
+                <button class="modal-button" type="submit" id="save-event" name="save-event">Save</button>
+                <button class="modal-button" id="close-modal">Close</button>
             </form>
         </div>
     </div>
@@ -149,25 +145,31 @@ if (!isset($_SESSION['member_id'])) {
         </div>
     </div>
 
-<!--  Display list of events that have been added to Calendar  -->
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h2>Upcoming Events</h2>
-                <ul id="events-list">
-                    <!-- List of upcoming events -->
-                </ul>
-                <button id="delete-event">Delete</button>
+    <!--  Display list of events that have been added to Calendar  -->
+
+    <div class="container-fluid" id="event-container">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h2 id="event-label">Upcoming Events</h2>
+                    <ul id="events-list">
+                        <!-- List of events will be displayed here -->
+
+                    </ul>
+                    <button id="delete-event">Delete</button>
+                </div>
             </div>
         </div>
-
-    <!-- Link to the Bootstrap CSS library -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-          crossorigin="anonymous">
-    <!-- Link to the external JavaScript file for the home page -->
-    <script src="../JavaScript/HomePage.js"></script>
+    </div>
 </main>
+
+<!-- Link to Bootstrap5 -->
+<script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<!-- Link to the external JavaScript file for the home page -->
+<script src="../JavaScript/HomePage.js"></script>
+
 </body>
 
 <!-- Footer -->
