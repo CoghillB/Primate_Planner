@@ -90,6 +90,16 @@
                     "exercise_type": "cardio"
                 }
             ]
+        },
+        {
+            "id": 4,
+            "fname": "Rom",
+            "lname": "J",
+            "email": "rom@b.com",
+            "password": "$2y$10$yl0qKxesWhPmBmgxKHlzEurTbF7fXZtT.i\/6POKZjqkJiXen2Mrp2",
+            "weight": null,
+            "goals": null,
+            "exercises": []
         }
     ]
 }
