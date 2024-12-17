@@ -1,16 +1,17 @@
 function calculateCaloriesBurned(weight, duration, activityType) {
     const workOutValues = {
-        cardio: 7.0,
-        weightlifting: 4.0,
-        hybrid: 5.5
+        cardio: 7,
+        weightlifting: 4,
+        hybrid: 5
     };
 
     const effortValue = workOutValues[activityType.toLowerCase()] || 0;
 
-    const weightInKg = weight * 0.453592;
+    const weightInKg = Math.round(weight * 0.453592); // Convert to kg and round to an integer
 
-    return (effortValue * 0.0175 * weightInKg * duration).toFixed(2);
+    return Math.round(effortValue * 0.0175 * weightInKg * duration); // Ensure the result is an integer
 }
+
 
 //Function to update daily exercise
 
@@ -20,28 +21,30 @@ function updateDailyExercise(event) {
     const duration = parseFloat($('#duration').val());
 
     const caloriesBurned = calculateCaloriesBurned(weight, duration, activityType);
-    $('#caloriesBurned').text(caloriesBurned);
+    $('#calories').text(caloriesBurned);
+
+   // alert(`You burned ${caloriesBurned} calories during this exercise.`);
 }
 
-//this will take an array of weights and return the average weight for the week
-function weeklyAverageWeight(weights) {
+//this will take an array of weights and return the average weight forr the week
+function weeklyAverageWeight(weights){
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
     return (totalWeight / weights.length).toFixed(2);
 }
 
 //function to keep track of our goals
-function trackGoals(currentCalories, weeklyCalories, currentWeight, goalWeight) {
-    const calorieProgress = ((currentCalories / weeklyCalories) * 100).toFixed(2);
+function trackGoals(currentCalories, weeklyCalories, currentWeight, goalWeight){
+    const calorieProgress =((currentCalories / weeklyCalories) * 100).toFixed(2);
     const weightProgress = ((currentWeight / goalWeight) * 100).toFixed(2);
-    return {
+    return{
         calorieProgress,
         weightProgress
     };
 }
 
-$(document).ready(function () {
+$(document).ready(function(){
     // Logout button redirects to Login.html
-    $('#logoutBTN').on('click', function () {
+    $('#logoutBTN').on('click', function(){
         // Redirect to login page
         window.location.href = 'Login.html';
     });
@@ -70,10 +73,13 @@ $(document).ready(function () {
         if (weight > 0 && duration > 0) {
             const calories = calculateCaloriesBurned(weight, duration, activityType);
             $('#caloriesBurned').text(calories);
+            $('#hiddenCaloriesBurned').val(calories); // Update the hidden input
         } else {
             $('#caloriesBurned').text('0');
+            $('#hiddenCaloriesBurned').val('0'); // Ensure hidden input is set to 0
         }
     });
+
     // Validate form before submitting
     $('#dailySpread').on('submit', function (event) {
         if (!validateExerciseForm()) {
@@ -81,3 +87,4 @@ $(document).ready(function () {
         }
     });
 });
+

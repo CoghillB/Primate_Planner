@@ -1,0 +1,95 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "fname": "John",
+            "lname": "Doe",
+            "email": "jdoe@example.com",
+            "password": "$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36.aE",
+            "weight": 180,
+            "goals": null,
+            "exercises": []
+        },
+        {
+            "id": 2,
+            "fname": "Ash",
+            "lname": "I",
+            "email": "ash@gmail.com",
+            "password": "$2y$10$XA1dZtfCE2q6ZYnTcDKTYOVLaE5xy.x70AAAyask1SAWaz\/lgezK6",
+            "weight": null,
+            "goals": null,
+            "exercises": []
+        },
+        {
+            "id": 3,
+            "fname": "a",
+            "lname": "s",
+            "email": "a@b.com",
+            "password": "$2y$10$rre7tCHSckbpumgR4svkCuyq.IqAXIhjrhfJ8bZ6CuY.XNSHeCFuC",
+            "weight": 180,
+            "goals": {
+                "weight": 160,
+                "calories_goal": 2000,
+                "exercise_goal": 200
+            },
+            "exercises": [
+                {
+                    "date": "2024-12-16",
+                    "weight": 180,
+                    "exercise_type": "cardio",
+                    "duration": 45,
+                    "calories_burned": 350
+                },
+                {
+                    "date": "2024-12-17",
+                    "weight": 181,
+                    "exercise_type": "weightlifting",
+                    "duration": 60,
+                    "calories_burned": 250
+                },
+                {
+                    "date": "2024-12-18",
+                    "weight": 180,
+                    "exercise_type": "hybrid",
+                    "duration": 30,
+                    "calories_burned": 200
+                },
+                {
+                    "date": "2024-12-19",
+                    "weight": 179,
+                    "exercise_type": "cardio",
+                    "duration": 50,
+                    "calories_burned": 400
+                },
+                {
+                    "date": "2024-12-20",
+                    "weight": 179,
+                    "exercise_type": "weightlifting",
+                    "duration": 40,
+                    "calories_burned": 220
+                },
+                {
+                    "date": "2024-12-21",
+                    "weight": 178,
+                    "exercise_type": "hybrid",
+                    "duration": 35,
+                    "calories_burned": 180
+                },
+                {
+                    "date": "2024-12-22",
+                    "calories_burned": 294,
+                    "duration": 30,
+                    "weight": 177,
+                    "exercise_type": "cardio"
+                },
+                {
+                    "date": "2024-12-23",
+                    "calories_burned": 595,
+                    "duration": 60,
+                    "weight": 178,
+                    "exercise_type": "cardio"
+                }
+            ]
+        }
+    ]
+}
