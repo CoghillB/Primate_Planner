@@ -139,7 +139,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Navbar -->
 <nav class="navbar navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
+        <!-- Home Button -->
+        <button class="btn btn-outline-light" onclick="window.location.href='Homepage.php'">Home</button>
+
+        <!-- Centered Navbar Title -->
         <span class="navbar-brand mx-auto text-center flex-grow-1">Primate Planner</span>
+
+        <!-- Logout Button -->
         <form action="../PHP/Logout.php" method="POST">
             <button type="submit" class="btn btn-outline-light logout-btn">Log Out</button>
         </form>

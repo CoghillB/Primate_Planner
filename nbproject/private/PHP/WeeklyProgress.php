@@ -95,6 +95,9 @@ echo "<script>console.log('Initial wight Goal:', " . json_encode($initialWeight)
 
 <!-- Navbar -->
 <nav class="navbar">
+    <div class="home-container">
+        <button class="logout-btn" onclick="window.location.href='Homepage.php'">Home</button>
+    </div>
     <span class="navbar-brand">Primate Planner</span>
     <div class="logout-container">
         <button class="logout-btn" onclick="window.location.href='../PHP/Logout.php'">Log Out</button>
